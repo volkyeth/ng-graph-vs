@@ -4,14 +4,16 @@ export const elements: ElementsDefinition = {
   nodes: [
     {
       data: {
-        id: "a",
+        id: "p0",
       }
     },
     {
       data: {
-        id: "b",
+        id: "p1",
       }
     },
   ],
-  edges: [],
+  edges: [
+    { data: { source: 'p1', target: 'p0' }, classes: 'negation' },
+  ],
 }

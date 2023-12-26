@@ -1,9 +1,11 @@
-import { Graph } from './components/app/graph'
+import { CytoscapeComponent } from './components/app/CytoscapeComponent'
+import { elements } from './graph/elements'
+import { style } from './graph/style'
 
 function App() {
   return (
     <div className="w-screen h-screen">
-      <Graph />
+      <CytoscapeComponent elements={elements} style={style} />
     </div>
   )
 }

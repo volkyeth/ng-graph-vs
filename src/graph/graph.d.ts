@@ -1,3 +1,4 @@
+declare module 'cytoscape-edge-connections'
 
 interface Node extends cytoscape.NodeDefinition {
   content: string
