@@ -12,10 +12,13 @@
   "dependencies": {
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
+    "@types/cytoscape": "^3.19.16",
     "autoprefixer": "^10.4.16",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cytoscape": "^3.28.1",
+    "cytoscape-edge-connections": "^0.5.0",
+    "jotai": "^2.6.0",
     "lucide-react": "^0.300.0",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
