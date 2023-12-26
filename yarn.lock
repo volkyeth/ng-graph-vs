@@ -814,6 +814,11 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
+"@types/cytoscape@^3.19.16":
+  version "3.19.16"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape/-/cytoscape-3.19.16.tgz#c54ad4ff5c53a0046f42d1b08a11e730ad83dcc1"
+  integrity sha512-A3zkjaZ6cOGyqEvrVuC1YUgiRSJhDZOj8Qhd1ALH2/+YxH2za1BOmR4RWQsKYHsc+aMP/IWoqg1COuUbZ39t/g==
+
 "@types/json-schema@^7.0.12":
   version "7.0.15"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
