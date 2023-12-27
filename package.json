@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@types/cytoscape": "^3.19.16",
@@ -17,7 +18,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cytoscape": "^3.28.1",
-    "cytoscape-edge-connections": "^0.5.0",
+    "cytoscape-edgehandles": "^4.0.1",
+    "cytoscape-popper": "^2.0.0",
     "jotai": "^2.6.0",
     "lucide-react": "^0.300.0",
     "postcss": "^8.4.32",
@@ -25,9 +27,12 @@
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.2.0",
     "tailwindcss": "^3.4.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ulid": "^2.3.0"
   },
   "devDependencies": {
+    "@types/cytoscape-edgehandles": "^4.0.3",
+    "@types/cytoscape-popper": "^2.0.4",
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",

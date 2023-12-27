@@ -488,6 +488,11 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
+"@popperjs/core@^2.0.0", "@popperjs/core@^2.11.8":
+  version "2.11.8"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
+  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
 "@radix-ui/number@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/number/-/number-1.0.1.tgz#644161a3557f46ed38a042acf4a770e826021674"
@@ -814,7 +819,22 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
-"@types/cytoscape@^3.19.16":
+"@types/cytoscape-edgehandles@^4.0.3":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape-edgehandles/-/cytoscape-edgehandles-4.0.3.tgz#5a53abc7abcd78032f99d2ad82332731fd6486e3"
+  integrity sha512-n/nUzfSudfbrtvcJIsruCvfduoW2zg/r+EjjFmceDDP+Pbdfx5A/fA/bAfAc4QlOwnkZ3HzF2oESAzes5mQHcg==
+  dependencies:
+    "@types/cytoscape" "*"
+
+"@types/cytoscape-popper@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape-popper/-/cytoscape-popper-2.0.4.tgz#cd1e81d28b202e2bfc5608e0e60ae53c908bf0e3"
+  integrity sha512-vGRiAMXeEIoY5ziPO0NrS8xmJyVkT8j8ARzvyD/x6CXciAO1+80Q2/Triyd9/+5I4PeatGo1Pch5YBwDMB1D6A==
+  dependencies:
+    "@popperjs/core" "^2.0.0"
+    "@types/cytoscape" "*"
+
+"@types/cytoscape@*", "@types/cytoscape@^3.19.16":
   version "3.19.16"
   resolved "https://registry.yarnpkg.com/@types/cytoscape/-/cytoscape-3.19.16.tgz#c54ad4ff5c53a0046f42d1b08a11e730ad83dcc1"
   integrity sha512-A3zkjaZ6cOGyqEvrVuC1YUgiRSJhDZOj8Qhd1ALH2/+YxH2za1BOmR4RWQsKYHsc+aMP/IWoqg1COuUbZ39t/g==
@@ -1218,10 +1238,20 @@ csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
-cytoscape-edge-connections@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/cytoscape-edge-connections/-/cytoscape-edge-connections-0.5.0.tgz#ab48ee7e24dc0dab5b6fce1abede907964c4cc7f"
-  integrity sha512-dLtckaAmZUfV6eCvDHEAIS8vZkIE1E0n0mdP6nQlu/1BKhqgl5VKRrkdB0s/Ak2fxla8ArJBGBvzULEO2qrU6w==
+cytoscape-edgehandles@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/cytoscape-edgehandles/-/cytoscape-edgehandles-4.0.1.tgz#0d856e6d9939e51c6d9c4db13d4e919c82a4a1d2"
+  integrity sha512-uSYshkqRZ4luCxK295bEVTg46q4ZW+fwJhcIzMrtfNR7zeAnJ38Z48kUGeu5ibtXkgLbcZAg0YE4ED2dRuaePg==
+  dependencies:
+    lodash.memoize "^4.1.2"
+    lodash.throttle "^4.1.1"
+
+cytoscape-popper@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-popper/-/cytoscape-popper-2.0.0.tgz#d93917695a9b8af3dbda1d8ee433618ac4d4e359"
+  integrity sha512-b7WSOn8qXHWtdIXFNmrgc8qkaOs16tMY0EwtRXlxzvn8X+al6TAFrUwZoYATkYSlotfd/36ZMoeKMEoUck6feA==
+  dependencies:
+    "@popperjs/core" "^2.0.0"
 
 cytoscape@^3.28.1:
   version "3.28.1"
@@ -1808,10 +1838,20 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
+lodash.memoize@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
+  integrity sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==
+
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
+
+lodash.throttle@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
+  integrity sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==
 
 lodash@^4.17.21:
   version "4.17.21"
@@ -2430,6 +2470,11 @@ typescript@^5.2.2:
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.3.tgz#b3ce6ba258e72e6305ba66f5c9b452aaee3ffe37"
   integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
+
+ulid@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/ulid/-/ulid-2.3.0.tgz#93063522771a9774121a84d126ecd3eb9804071f"
+  integrity sha512-keqHubrlpvT6G2wH0OEfSW4mquYRcbe/J8NMmveoQOjUqmo+hXtO+ORCpWhdbZ7k72UtY61BL7haGxW6enBnjw==
 
 undici-types@~5.26.4:
   version "5.26.5"
