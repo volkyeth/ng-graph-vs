@@ -1,6 +1,7 @@
 import { cyInstanceAtom } from "@/hooks/useCyInstance";
-import { Instance, arrow } from "@popperjs/core";
+import { Instance } from "@popperjs/core";
 import cytoscape, { EdgeSingular, NodeSingular } from "cytoscape";
+import dagre from "cytoscape-dagre";
 import edgehandles from "cytoscape-edgehandles";
 import popper from "cytoscape-popper";
 import { useSetAtom } from "jotai";
@@ -11,6 +12,7 @@ import { Point } from "../ui/Point";
 
 cytoscape.use(popper);
 cytoscape.use(edgehandles);
+cytoscape.use(dagre);
 
 interface CytoscapeComponentProps {
   elements?: cytoscape.ElementsDefinition;
@@ -33,46 +35,63 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
 
       const instance = cytoscape({
         container: cyContainer.current,
-        layout: { name: "cose" },
+        layout: {
+          name: "dagre",
+          // @ts-expect-error Type
+          rankDir: "BT",
+          nodeDimensionsIncludeLabels: true,
+          fit: true,
+          padding: 100,
+        },
+
         autoungrabify: true,
+        // maxZoom: 2,
+        // minZoom: 0.5,
         ...cyProps,
       });
 
       setCy?.(instance);
-      instance.zoom(1);
-      instance.center(instance.elements());
 
-      const points = instance.nodes().filter((e) => e.hasClass("point"));
       const reactRoots = [] as Root[];
       const popperDivs = [] as HTMLDivElement[];
       const popperInstances = [] as Instance[];
 
-      for (const point of points) {
-        const popper = point.popper({
-          content: () => {
-            const content = document.createElement("div");
+      // const points = instance
+      //   .nodes()
+      //   .filter((e) => e.hasClass("point") || e.hasClass("proposal"));
 
-            content.innerHTML = point.data("text");
-            document.body.appendChild(content);
-            const reactRoot = createRoot(content);
+      // for (const point of points) {
+      //   const popper = point.popper({
+      //     content: () => {
+      //       const content = document.createElement("div");
 
-            reactRoot.render(<Point text={point.data("text")} />);
-            reactRoots.push(reactRoot);
-            popperDivs.push(content);
+      //       document.body.appendChild(content);
+      //       const reactRoot = createRoot(content);
 
-            return content;
-          },
-          popper: {
-            strategy: "fixed",
-            modifiers: [arrow],
-            placement: "top",
-          },
-        });
-        popperInstances.push(popper);
+      //       reactRoot.render(<Point text={point.data("text")} />);
+      //       reactRoots.push(reactRoot);
+      //       popperDivs.push(content);
 
-        point.on("position", popper.update);
-        instance.on("pan zoom resize", popper.update);
-      }
+      //       return content;
+      //     },
+      //     popper: {
+      //       strategy: "fixed",
+      //       placement: "top",
+      //       modifiers: [
+      //         {
+      //           name: "offset",
+      //           options: {
+      //             offset: [0, 10],
+      //           },
+      //         },
+      //       ],
+      //     },
+      //   });
+      //   popperInstances.push(popper);
+
+      //   point.on("position", popper.update);
+      //   instance.on("pan zoom resize", popper.update);
+      // }
 
       const edgeHandles = instance.edgehandles({
         canConnect: (sourceNode, targetNode) => {
@@ -86,7 +105,6 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
 
           return true;
         },
-        disableBrowserGestures: true,
       });
 
       instance.on("add", "node.point", (e) => {
@@ -107,7 +125,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
           popper: {
             strategy: "fixed",
-            modifiers: [arrow],
+            modifiers: [],
             placement: "top",
           },
         });
@@ -153,10 +171,12 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
 
       edgeHandles.enableDrawMode();
 
+      console.log(instance.json());
+
       return () => {
         instance.destroy();
         reactRoots.forEach((root) => {
-          root.unmount();
+          setTimeout(() => root.unmount());
         });
         popperDivs.forEach((div) => {
           document.body.removeChild(div);

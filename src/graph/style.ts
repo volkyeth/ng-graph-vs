@@ -5,6 +5,19 @@ export const style: cytoscape.Stylesheet[] = [
       "background-color": "blue",
       width: "20px",
       height: "20px",
+      label: "data(text)",
+      "text-wrap": "wrap",
+      "text-max-width": 160,
+      "text-background-color": "#fff",
+      "text-background-opacity": 1,
+      "text-background-padding": 4,
+      "text-background-shape": "roundrectangle",
+      "text-border-color": "#aaa",
+      "text-border-width": 1,
+      "text-border-opacity": 1,
+      "text-margin-y": -15,
+
+      "min-zoomed-font-size": 10,
     },
   },
   {
@@ -23,13 +36,13 @@ export const style: cytoscape.Stylesheet[] = [
       "target-arrow-color": "#ccc",
       "target-arrow-shape": "triangle",
       "arrow-scale": 1,
-      "curve-style": "bezier",
+      "curve-style": "straight",
     },
   },
   {
     selector: "edge.has",
     style: {
-      "target-arrow-shape": "none",
+      "target-arrow-shape": "triangle",
     },
   },
 ];
