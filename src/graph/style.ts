@@ -44,6 +44,8 @@ export const style: cytoscape.Stylesheet[] = [
     selector: "edge",
     style: {
       width: 2,
+      "target-arrow-shape": "triangle",
+      "arrow-scale": 1,
       "curve-style": "straight",
     },
   },
@@ -51,6 +53,7 @@ export const style: cytoscape.Stylesheet[] = [
     selector: "edge.has",
     style: {
       "line-color": "#ccc",
+      "target-arrow-shape": "none",
     },
   },
   {
