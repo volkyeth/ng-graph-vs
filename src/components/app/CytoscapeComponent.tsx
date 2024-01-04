@@ -1,6 +1,10 @@
 import { cyInstanceAtom } from "@/hooks/useCyInstance";
-import { useToggleNegationModal } from "@/hooks/useIsNegationModalOpen";
-import cytoscape, { EdgeSingular, NodeSingular } from "cytoscape";
+import cytoscape, {
+  EdgeSingular,
+  LayoutOptions,
+  NodeSingular,
+  Singular,
+} from "cytoscape";
 import cxtmenu from "cytoscape-cxtmenu";
 import dagre from "cytoscape-dagre";
 import edgehandles from "cytoscape-edgehandles";
@@ -8,6 +12,7 @@ import { useSetAtom } from "jotai";
 import React, { useEffect, useRef } from "react";
 import { Root } from "react-dom/client";
 import { ulid } from "ulid";
+import { useTriggerNegationModal } from "../ui/AddNegationModal.state";
 
 cytoscape.use(edgehandles);
 cytoscape.use(dagre);
@@ -24,7 +29,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
 }) => {
   const setCy = useSetAtom(cyInstanceAtom);
   const cyContainer = useRef<HTMLDivElement>(null);
-  const toggleNegationModal = useToggleNegationModal();
+  const triggerNegationModal = useTriggerNegationModal();
 
   useEffect(() => {
     if (cyContainer.current) {
@@ -45,16 +50,11 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
 
       setCy?.(instance);
 
-      instance
-        .layout({
-          name: "dagre",
-          // @ts-expect-error Type
-          rankDir: "RL",
-          nodeDimensionsIncludeLabels: true,
-          fit: true,
-          padding: 100,
-        })
-        .run();
+      instance.on("select", (e) => {
+        console.log(e.target.classes(), e.target.data());
+      });
+
+      updateLayout(instance, { fit: true, padding: 100 });
 
       const menu = instance.cxtmenu({
         menuRadius: () => 120, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. Can either be a number or function as in the example.
@@ -66,8 +66,9 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
             content: "Negate", // html/text content to be displayed in the menu
             contentStyle: {}, // css key:value pairs to set the command's css in js if you want
             select: (element) => {
-              toggleNegationModal();
-              console.log(element.id()); // `ele` holds the reference to the active element
+              triggerNegationModal((negation) => {
+                negate(instance, element, negation);
+              });
             },
           },
           {
@@ -225,33 +226,20 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
                 data: {
                   source: pointId,
                   target: relevanceId,
-                  classes: "has",
                 },
+                classes: "has",
               },
               {
                 data: {
                   source: relevanceId,
                   target: targetNode.id(),
-                  classes: "negating",
                 },
+                classes: "negating",
               },
             ],
           });
 
-          e.cy
-            .elements()
-            .unlock()
-            .layout({
-              name: "dagre",
-              // @ts-expect-error Type
-              animate: true,
-              rankDir: "RL",
-              nodeDimensionsIncludeLabels: true,
-
-              fit: true,
-              padding: 100,
-            })
-            .run();
+          updateLayout(instance, { animate: true });
         }
       );
 
@@ -270,4 +258,55 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   }, [cyContainer, cyProps, setCy]);
 
   return <div ref={cyContainer} style={{ width: "100%", height: "100%" }} />;
+};
+
+const negate = (cy: cytoscape.Core, target: Singular, negation: string) => {
+  const relevanceId = ulid();
+  const negationId = ulid();
+  cy.add({
+    nodes: [
+      {
+        data: { id: relevanceId, conviction: 1 },
+        classes: "relevance",
+      },
+      {
+        data: {
+          conviction: 1,
+          pointId: ulid(),
+          text: negation,
+          id: negationId,
+        },
+        classes: "point",
+      },
+    ],
+    edges: [
+      {
+        data: {
+          source: negationId,
+          target: relevanceId,
+        },
+        classes: "has",
+      },
+      {
+        data: {
+          source: relevanceId,
+          target: target.id(),
+        },
+        classes: "negating",
+      },
+    ],
+  });
+
+  updateLayout(cy, { animate: true });
+};
+
+const updateLayout = (cy: cytoscape.Core, options?: Partial<LayoutOptions>) => {
+  cy.layout({
+    name: "dagre",
+    // @ts-expect-error Type
+    fit: false,
+    rankDir: "RL",
+    nodeDimensionsIncludeLabels: true,
+    ...options,
+  }).run();
 };

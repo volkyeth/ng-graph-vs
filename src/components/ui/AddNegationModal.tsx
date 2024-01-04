@@ -1,47 +1,47 @@
+import { FC, useState } from "react";
 import {
+  useDismissNegationModal,
   useIsNegationModalOpen,
-  useToggleNegationModal,
-} from "@/hooks/useisNegationModalOpen";
-import { Button } from "./button";
+  useNegationModalCallback,
+} from "./AddNegationModal.state";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogOverlay,
   DialogTitle,
-} from "./dialog";
+} from "./Dialog";
+import { Label } from "./Label";
+import { Textarea } from "./Textarea";
+import { Button } from "./button";
 
 export interface AddNegationModalProps {}
 
-export const AddNegationModal = () => {
+export const AddNegationModal: FC<AddNegationModalProps> = () => {
   const open = useIsNegationModalOpen();
-  const toggleModal = useToggleNegationModal();
+  const onAddNegation = useNegationModalCallback();
+  const [negation, setNegation] = useState("");
+  const dismissModal = useDismissNegationModal();
   return (
-    <Dialog open={open} onOpenChange={toggleModal}>
+    <Dialog open={open} onOpenChange={dismissModal}>
       <DialogOverlay />
-      <DialogContent className="sm:max-w-[425px] bg-white">
+      <DialogContent className="flex flex-col gap-10 sm:max-w-[425px] bg-white">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
+          <DialogTitle>Add negation</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          {/* <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
-          </div> */}
+        <div className="flex flex-col items-start gap-4">
+          <Label htmlFor="negation" className="text-right">
+            Negation {negation.length}/320
+          </Label>
+          <Textarea
+            autoFocus
+            id="negation"
+            value={negation}
+            onChange={(e) => setNegation(e.target.value)}
+            maxLength={320}
+          />
         </div>
         <DialogFooter>
           <DialogClose asChild>
@@ -49,7 +49,19 @@ export const AddNegationModal = () => {
               Cancel
             </Button>
           </DialogClose>
-          <Button type="submit">Save negation</Button>
+          <Button
+            type="submit"
+            onClick={() => {
+              if (!onAddNegation) return;
+              console.log("adding negation", negation);
+
+              onAddNegation(negation);
+              setNegation("");
+              dismissModal();
+            }}
+          >
+            Add negation
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

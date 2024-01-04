@@ -44,18 +44,13 @@ export const style: cytoscape.Stylesheet[] = [
     selector: "edge",
     style: {
       width: 2,
-      "line-color": "#ccc",
-      "target-arrow-color": "#ccc",
-      "target-arrow-shape": "triangle",
-      "arrow-scale": 1,
       "curve-style": "straight",
     },
   },
   {
     selector: "edge.has",
     style: {
-      "target-arrow-shape": "none",
-      // "line-color": "#faa",
+      "line-color": "#ccc",
     },
   },
   {
@@ -71,6 +66,8 @@ export const style: cytoscape.Stylesheet[] = [
         return "solid";
       },
       "target-arrow-color": "red",
+      "target-arrow-shape": "triangle",
+      "arrow-scale": 1,
     },
   },
 ];
