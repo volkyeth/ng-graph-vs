@@ -488,11 +488,6 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@popperjs/core@^2.0.0", "@popperjs/core@^2.11.8":
-  version "2.11.8"
-  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
-  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
-
 "@radix-ui/number@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/number/-/number-1.0.1.tgz#644161a3557f46ed38a042acf4a770e826021674"
@@ -539,6 +534,27 @@
   integrity sha512-ebbrdFoYTcuZ0v4wG5tedGnp9tzcV8awzsxYph7gXUyvnNLuTIcCk1q17JEbnVhXAKG9oX3KtchwiMIAYp9NLg==
   dependencies:
     "@babel/runtime" "^7.13.10"
+
+"@radix-ui/react-dialog@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-dialog/-/react-dialog-1.0.5.tgz#71657b1b116de6c7a0b03242d7d43e01062c7300"
+  integrity sha512-GjWJX/AUpB703eEBanuBnIWdIXg6NvJFCXcNlSZk4xdszCdhrJgBoUd1cGk67vFO+WdA2pfI/plOpqz/5GUP6Q==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/primitive" "1.0.1"
+    "@radix-ui/react-compose-refs" "1.0.1"
+    "@radix-ui/react-context" "1.0.1"
+    "@radix-ui/react-dismissable-layer" "1.0.5"
+    "@radix-ui/react-focus-guards" "1.0.1"
+    "@radix-ui/react-focus-scope" "1.0.4"
+    "@radix-ui/react-id" "1.0.1"
+    "@radix-ui/react-portal" "1.0.4"
+    "@radix-ui/react-presence" "1.0.1"
+    "@radix-ui/react-primitive" "1.0.3"
+    "@radix-ui/react-slot" "1.0.2"
+    "@radix-ui/react-use-controllable-state" "1.0.1"
+    aria-hidden "^1.1.1"
+    react-remove-scroll "2.5.5"
 
 "@radix-ui/react-direction@1.0.1":
   version "1.0.1"
@@ -608,6 +624,15 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
     "@radix-ui/react-primitive" "1.0.3"
+
+"@radix-ui/react-presence@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-presence/-/react-presence-1.0.1.tgz#491990ba913b8e2a5db1b06b203cb24b5cdef9ba"
+  integrity sha512-UXLW4UAbIY5ZjcvzjfRFo5gxva8QirC9hF7wRE4U5gz+TP0DbRk+//qyuAQ1McDxBt1xNMBTaciFGvEmJvAZCg==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/react-compose-refs" "1.0.1"
+    "@radix-ui/react-use-layout-effect" "1.0.1"
 
 "@radix-ui/react-primitive@1.0.3":
   version "1.0.3"
@@ -819,6 +844,13 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
+"@types/cytoscape-cxtmenu@^3.4.4":
+  version "3.4.4"
+  resolved "https://registry.yarnpkg.com/@types/cytoscape-cxtmenu/-/cytoscape-cxtmenu-3.4.4.tgz#a3f3b4ba4d28c0cb9e796920c91567bd99dd4c0d"
+  integrity sha512-cuv+IdbKekswDRBIrHn97IYOzWS2/UjVr0kDIHCOYvqWy3iZkuGGM4qmHNPQ+63Dn7JgtmD0l3MKW1moyhoaKw==
+  dependencies:
+    "@types/cytoscape" "*"
+
 "@types/cytoscape-dagre@^2.3.3":
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/@types/cytoscape-dagre/-/cytoscape-dagre-2.3.3.tgz#27f7c57e6e055a05d8f971cb09e76e11c837734c"
@@ -831,14 +863,6 @@
   resolved "https://registry.yarnpkg.com/@types/cytoscape-edgehandles/-/cytoscape-edgehandles-4.0.3.tgz#5a53abc7abcd78032f99d2ad82332731fd6486e3"
   integrity sha512-n/nUzfSudfbrtvcJIsruCvfduoW2zg/r+EjjFmceDDP+Pbdfx5A/fA/bAfAc4QlOwnkZ3HzF2oESAzes5mQHcg==
   dependencies:
-    "@types/cytoscape" "*"
-
-"@types/cytoscape-popper@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@types/cytoscape-popper/-/cytoscape-popper-2.0.4.tgz#cd1e81d28b202e2bfc5608e0e60ae53c908bf0e3"
-  integrity sha512-vGRiAMXeEIoY5ziPO0NrS8xmJyVkT8j8ARzvyD/x6CXciAO1+80Q2/Triyd9/+5I4PeatGo1Pch5YBwDMB1D6A==
-  dependencies:
-    "@popperjs/core" "^2.0.0"
     "@types/cytoscape" "*"
 
 "@types/cytoscape@*", "@types/cytoscape@^3.19.16":
@@ -1245,6 +1269,11 @@ csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
+cytoscape-cxtmenu@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-cxtmenu/-/cytoscape-cxtmenu-3.5.0.tgz#c1a79e9e63eddfd0a60a287025a36414c897ecf6"
+  integrity sha512-CoqgKAxvQhmHO5fEgJdBqqR2VjwK1dNkxehc2i0MUMqY0araA13z3oP/9KkprHp9Td++KlVBz6JnncNAD76T0Q==
+
 cytoscape-dagre@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/cytoscape-dagre/-/cytoscape-dagre-2.5.0.tgz#47d9835ab64dd0b596d9c94731f070282f82fc5a"
@@ -1259,13 +1288,6 @@ cytoscape-edgehandles@^4.0.1:
   dependencies:
     lodash.memoize "^4.1.2"
     lodash.throttle "^4.1.1"
-
-cytoscape-popper@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/cytoscape-popper/-/cytoscape-popper-2.0.0.tgz#d93917695a9b8af3dbda1d8ee433618ac4d4e359"
-  integrity sha512-b7WSOn8qXHWtdIXFNmrgc8qkaOs16tMY0EwtRXlxzvn8X+al6TAFrUwZoYATkYSlotfd/36ZMoeKMEoUck6feA==
-  dependencies:
-    "@popperjs/core" "^2.0.0"
 
 cytoscape@^3.28.1:
   version "3.28.1"

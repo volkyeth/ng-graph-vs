@@ -2,32 +2,44 @@ export const style: cytoscape.Stylesheet[] = [
   {
     selector: "node.point",
     style: {
-      "background-color": "blue",
-      width: "20px",
-      height: "20px",
+      "background-color": "#f9f9f9",
+      "border-color": "#aaa",
+      "border-width": 1,
+      shape: "round-rectangle",
+      width: "400px",
+      height: "160px",
       label: "data(text)",
       "text-wrap": "wrap",
-      "text-max-width": 160,
-      "text-background-color": "#fff",
-      "text-background-opacity": 1,
-      "text-background-padding": 4,
-      "text-background-shape": "roundrectangle",
-      "text-border-color": "#aaa",
-      "text-border-width": 1,
-      "text-border-opacity": 1,
-      "text-margin-y": -15,
-
-      "min-zoomed-font-size": 10,
+      "text-justification": "left",
+      "text-max-width": "360px",
+      "text-valign": "center",
+    },
+  },
+  {
+    selector: "node.proposal",
+    style: {
+      "background-color": "#ffe",
     },
   },
   {
     selector: "node.relevance",
     style: {
-      "background-color": "#ccc",
-      width: 4,
-      height: 4,
+      "border-color": "#ccc",
+      "border-width": 2,
+      "background-color": "#eee",
+      "text-valign": "center",
+      width: 32,
+      height: 32,
+      label: "data(conviction)",
     },
   },
+  {
+    selector: "node.relevance[conviction < 0]",
+    style: {
+      "background-color": "#faa",
+    },
+  },
+
   {
     selector: "edge",
     style: {
@@ -42,7 +54,23 @@ export const style: cytoscape.Stylesheet[] = [
   {
     selector: "edge.has",
     style: {
-      "target-arrow-shape": "triangle",
+      "target-arrow-shape": "none",
+      // "line-color": "#faa",
+    },
+  },
+  {
+    selector: "edge.negating",
+    style: {
+      "line-color": "red",
+      "line-style": (edge) => {
+        const conviction = edge.source().data("conviction");
+        if (conviction < 0) {
+          return "dashed";
+        }
+
+        return "solid";
+      },
+      "target-arrow-color": "red",
     },
   },
 ];
