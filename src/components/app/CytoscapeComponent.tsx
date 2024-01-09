@@ -187,7 +187,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         },
       });
 
-      instance.on("ehstart", (e, sourceNode: NodeSingular) => {
+      instance.on("ehstart", (_, sourceNode: NodeSingular) => {
         if (sourceNode.hasClass("relevance")) {
           edgeHandles.stop();
         }
