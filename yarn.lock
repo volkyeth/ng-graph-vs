@@ -488,6 +488,11 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
+"@popperjs/core@^2.0.0":
+  version "2.11.8"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
+  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
 "@radix-ui/number@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/number/-/number-1.0.1.tgz#644161a3557f46ed38a042acf4a770e826021674"
@@ -1289,6 +1294,11 @@ cytoscape-dagre@^2.5.0:
   dependencies:
     dagre "^0.8.5"
 
+cytoscape-edge-connections@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-edge-connections/-/cytoscape-edge-connections-0.5.0.tgz#ab48ee7e24dc0dab5b6fce1abede907964c4cc7f"
+  integrity sha512-dLtckaAmZUfV6eCvDHEAIS8vZkIE1E0n0mdP6nQlu/1BKhqgl5VKRrkdB0s/Ak2fxla8ArJBGBvzULEO2qrU6w==
+
 cytoscape-edgehandles@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/cytoscape-edgehandles/-/cytoscape-edgehandles-4.0.1.tgz#0d856e6d9939e51c6d9c4db13d4e919c82a4a1d2"
@@ -1296,6 +1306,13 @@ cytoscape-edgehandles@^4.0.1:
   dependencies:
     lodash.memoize "^4.1.2"
     lodash.throttle "^4.1.1"
+
+cytoscape-popper@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-popper/-/cytoscape-popper-2.0.0.tgz#d93917695a9b8af3dbda1d8ee433618ac4d4e359"
+  integrity sha512-b7WSOn8qXHWtdIXFNmrgc8qkaOs16tMY0EwtRXlxzvn8X+al6TAFrUwZoYATkYSlotfd/36ZMoeKMEoUck6feA==
+  dependencies:
+    "@popperjs/core" "^2.0.0"
 
 cytoscape@^3.28.1:
   version "3.28.1"
@@ -1818,10 +1835,15 @@ jiti@^1.19.1:
   resolved "https://registry.yarnpkg.com/jiti/-/jiti-1.21.0.tgz#7c97f8fe045724e136a397f7340475244156105d"
   integrity sha512-gFqAIbuKyyso/3G2qhiO2OM6shY6EPP/R0+mkDbyspxKazh8BXDC5FiFsUjlczgdNz/vfra0da2y+aHrusLG/Q==
 
-jotai@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/jotai/-/jotai-2.6.0.tgz#68b5d634f78a9ea55adfb8d92206ef59304b5dd5"
-  integrity sha512-Vt6hsc04Km4j03l+Ax+Sc+FVft5cRJhqgxt6GTz6GM2eM3DyX3CdBdzcG0z2FrlZToL1/0OAkqDghIyARWnSuQ==
+jotai-location@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/jotai-location/-/jotai-location-0.5.2.tgz#9d8ccbaea0cc2ed199c7e15adb7a3b8a3060fa6d"
+  integrity sha512-4S9hDh1wYp4SG4Laq3+Xd0GdW7jwnWlbEuL8U22kv3wUZW892n6gXlNhwU0LaoXnWoGG0gtjSLBuFm5iodFKLg==
+
+jotai@^2.6.4:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/jotai/-/jotai-2.6.4.tgz#a68a76f0e5cd2b614afae7112cfc52a77dbfe038"
+  integrity sha512-RniwQPX4893YlNR1muOtyUGHYaTD1fhEN4qnOuZJSrDHj6xdEMrqlRSN/hCm2fshwk78ruecB/P2l+NCVWe6TQ==
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"

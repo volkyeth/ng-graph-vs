@@ -1,14 +1,18 @@
+import { EdgeSingular, NodeSingular } from "cytoscape";
+
 export const style: cytoscape.Stylesheet[] = [
   {
     selector: "node.point",
     style: {
-      "background-color": "#f9f9f9",
+      "background-color": (node: NodeSingular) =>
+        getColor(node.data("consilience")),
       "border-color": "#aaa",
       "border-width": 1,
-      shape: "round-rectangle",
-      width: "400px",
-      height: "160px",
-      label: "data(text)",
+      shape: "ellipse",
+      width: "100px",
+      height: "100px",
+      label: (point: NodeSingular) =>
+        `${point.data("consilience") ?? "-"}/${point.data("conviction")}`,
       "text-wrap": "wrap",
       "text-justification": "left",
       "text-max-width": "360px",
@@ -16,61 +20,35 @@ export const style: cytoscape.Stylesheet[] = [
     },
   },
   {
-    selector: "node.proposal",
+    selector: "node.aux-node",
     style: {
-      "background-color": "#ffe",
-    },
-  },
-  {
-    selector: "node.relevance",
-    style: {
-      "border-color": "#ccc",
-      "border-width": 2,
-      "background-color": "#eee",
-      "text-valign": "center",
-      width: 32,
-      height: 32,
-      label: "data(conviction)",
-    },
-  },
-  {
-    selector: "node.relevance[conviction < 0]",
-    style: {
-      "background-color": "#faa",
+      "background-color": (node: NodeSingular) =>
+        getColor(
+          node.cy().getElementById(node.data("edgeId")).data("consilience")
+        ),
+      label: (node: NodeSingular) => {
+        const negation = node.cy().getElementById(node.data("edgeId"));
+        return `${negation.data("consilience") ?? "-"}/${negation.data(
+          "conviction"
+        )}`;
+      },
     },
   },
 
   {
-    selector: "edge",
+    selector: "edge.negation",
     style: {
       width: 2,
       "target-arrow-shape": "triangle",
+      "source-arrow-shape": (e: EdgeSingular) =>
+        e.target().hasClass("aux-node") ? "none" : "triangle",
       "arrow-scale": 1,
       "curve-style": "straight",
     },
   },
-  {
-    selector: "edge.has",
-    style: {
-      "line-color": "#ccc",
-      "target-arrow-shape": "none",
-    },
-  },
-  {
-    selector: "edge.negating",
-    style: {
-      "line-color": "red",
-      "line-style": (edge) => {
-        const conviction = edge.source().data("conviction");
-        if (conviction < 0) {
-          return "dashed";
-        }
-
-        return "solid";
-      },
-      "target-arrow-color": "red",
-      "target-arrow-shape": "triangle",
-      "arrow-scale": 1,
-    },
-  },
 ];
+
+const getColor = (consilience: number) =>
+  `hsl(${consilience > 0 ? 120 : 0}, 100%, ${
+    100 - Math.min(Math.abs(consilience), 50)
+  }%)`;
