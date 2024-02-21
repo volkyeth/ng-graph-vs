@@ -55,6 +55,76 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   }, [cy, algoIterations]);
 
   useEffect(() => {
+    if (!cy) return;
+  
+    let tempNodeId = null; // To keep track of the temporary node
+  
+    // Function to remove the temporary node if it exists
+    const removeTempNode = () => {
+      if (tempNodeId) {
+        cy.getElementById(tempNodeId).remove();
+        tempNodeId = null;
+      }
+    };
+  
+    // Listen for tap events on the background to create a transparent node
+    cy.on('tap', (event) => {
+      if (event.target === cy) {
+        removeTempNode(); // Remove existing temp node if any
+        const position = event.position;
+        // Create a temporary node with minimal visibility
+        const tempNode = cy.add({
+          group: 'nodes',
+          data: { id: 'tempNode', label: 'Temp' }, // Temporary data
+          position,
+          classes: 'temporary-node' // Use this class to style the node as mostly transparent
+        });
+        tempNodeId = tempNode.id();
+      }
+    });
+  
+    // Listen for right-click (context tap) on the background to remove the temporary node
+    cy.on('cxttap', (event) => {
+      if (event.target === cy) {
+        removeTempNode();
+      }
+    });
+  
+    // Listen for tap events on nodes
+    cy.on('tap', 'node', (event) => {
+      const nodeId = event.target.id();
+      if (nodeId === tempNodeId) {
+        // Transform the temporary node into a standard node using the provided snippet
+        cy.getElementById(tempNodeId).remove(); // Remove the temporary node
+        cy.add({
+          group: 'nodes',
+          data: {
+            conviction: 1,
+            consilience: 1,
+          },
+          position: event.target.position(),
+          classes: "point", // Assuming "point" class is for standard nodes
+        });
+        tempNodeId = null; // Reset tempNodeId as it's no longer temporary
+      } else {
+        // Clicked on a different node, remove the temporary node
+        removeTempNode();
+      }
+    });
+  
+    // Ensure temporary node is removed if the tap is on the edge or elsewhere
+    cy.on('tap', 'edge', removeTempNode);
+  
+    return () => {
+      // Clean up listeners
+      cy.off('tap');
+      cy.off('cxttap');
+      cy.off('tap', 'node');
+      cy.off('tap', 'edge');
+    };
+  }, [cy]);
+
+  useEffect(() => {
     if (!cyContainer.current) return;
 
     const instance = cytoscape({
@@ -83,19 +153,19 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       setElements(instance.elements(".point,.negation").jsons());
     });
 
-    instance.on("tap", (e) => {
-      if (e.target === instance) { // Check if the tap was on the background
-        instance.add({
-          group: 'nodes',
-          data: {
-            conviction: 1,
-            consilience: 1,
-          },
-          position: e.position,
-          classes: "point",
-        });
-      }
-    });
+    // instance.on("tap", (e) => {
+    //   if (e.target === instance) { // Check if the tap was on the background
+    //     instance.add({
+    //       group: 'nodes',
+    //       data: {
+    //         conviction: 1,
+    //         consilience: 1,
+    //       },
+    //       position: e.position,
+    //       classes: "point",
+    //     });
+    //   }
+    // });
 
     const edgeHandlesInstance = instance.edgehandles({
       canConnect: (sourceNode, targetNode) => {
