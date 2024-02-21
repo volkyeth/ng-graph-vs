@@ -104,7 +104,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     cy.on(
       "ehcomplete",
       (
-        e,
+        _,
         sourceNode: NodeSingular,
         targetNode: NodeSingular,
         addedEdge: EdgeSingular
