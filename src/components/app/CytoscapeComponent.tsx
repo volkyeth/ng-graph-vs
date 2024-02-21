@@ -245,7 +245,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#f33", // optional: custom background color for item
+          fillColor: "#32f", // optional: custom background color for item
           content: "- 10", // html/text content to be displayed in the menu
           contentStyle: {}, // css key:value pairs to set the command's css in js if you want
           select: (e) => {
@@ -253,7 +253,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#f66", // optional: custom background color for item
+          fillColor: "#66f", // optional: custom background color for item
           content: "- 5", // html/text content to be displayed in the menu
           contentStyle: {}, // css key:value pairs to set the command's css in js if you want
           select: (e) => {
@@ -261,7 +261,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#f99", // optional: custom background color for item
+          fillColor: "#99f", // optional: custom background color for item
           content: "- 1", // html/text content to be displayed in the menu
           contentStyle: {}, // css key:value pairs to set the command's css in js if you want
           select: (e) => {

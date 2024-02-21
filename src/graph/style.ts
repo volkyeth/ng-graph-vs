@@ -49,6 +49,6 @@ export const style: cytoscape.Stylesheet[] = [
 ];
 
 const getColor = (consilience: number) =>
-  `hsl(${consilience > 0 ? 120 : 0}, 100%, ${
+  `hsl(${consilience > 0 ? 120 : 240}, 100%, ${
     100 - Math.min(Math.abs(consilience), 50)
   }%)`;
