@@ -344,7 +344,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#f33",
+          fillColor: "#32f",
           content: "- 10",
           contentStyle: {},
           select: (e) => {
@@ -355,7 +355,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#f66",
+          fillColor: "#66f",
           content: "- 5",
           contentStyle: {},
           select: (e) => {
@@ -366,7 +366,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#f99",
+          fillColor: "#99f",
           content: "- 1",
           contentStyle: {},
           select: (e) => {
