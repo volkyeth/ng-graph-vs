@@ -87,45 +87,43 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   useEffect(() => {
     if (!cy) return;
   
-    let tempNodeId = null; // To keep track of the temporary node
+    let tempNodeId: string | null = null; // Explicitly declare tempNodeId as string or null
   
     // Function to remove the temporary node if it exists
     const removeTempNode = () => {
-      if (tempNodeId) {
+      if (tempNodeId) { // This check ensures tempNodeId is not null
         cy.getElementById(tempNodeId).remove();
         tempNodeId = null;
       }
     };
-  
+
     // Listen for tap events on the background to create a transparent node
     cy.on('tap', (event) => {
       if (event.target === cy) {
-        removeTempNode(); // Remove existing temp node if any
-        const position = event.position;
-        // Create a temporary node with minimal visibility
-        const tempNode = cy.add({
-          group: 'nodes',
-          data: { id: 'tempNode', label: 'Temp' }, // Temporary data
-          position,
-          classes: 'temporary-node' // Use this class to style the node as mostly transparent
-        });
-        tempNodeId = tempNode.id();
+        if (tempNodeId === null) {
+          const position = event.position;
+          // Create a temporary node with minimal visibility
+          const tempNode = cy.add({
+            group: 'nodes',
+            data: { id: 'tempNode', label: 'Temp' }, // Temporary data
+            position,
+            classes: 'temporary-node' // Use this class to style the node as mostly transparent
+          });
+          tempNodeId = tempNode.id(); // Store the ID of the temporary node
+        } else {
+          removeTempNode(); // Remove existing temp node if any
+        }
       }
     });
-  
-    // Listen for right-click (context tap) on the background to remove the temporary node
-    cy.on('cxttap', (event) => {
-      if (event.target === cy) {
-        removeTempNode();
-      }
-    });
-  
+
     // Listen for tap events on nodes
     cy.on('tap', 'node', (event) => {
       const nodeId = event.target.id();
       if (nodeId === tempNodeId) {
-        // Transform the temporary node into a standard node using the provided snippet
-        cy.getElementById(tempNodeId).remove(); // Remove the temporary node
+        // Ensure tempNodeId is not null before using it
+        if (tempNodeId !== null) {
+          cy.getElementById(tempNodeId).remove(); // Remove the temporary node
+        }
         cy.add({
           group: 'nodes',
           data: {
@@ -141,7 +139,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         removeTempNode();
       }
     });
-  
+
     // Ensure temporary node is removed if the tap is on the edge or elsewhere
     cy.on('tap', 'edge', removeTempNode);
   
