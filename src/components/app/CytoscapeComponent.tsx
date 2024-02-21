@@ -40,6 +40,8 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       if (e.key === "ArrowRight") setAlgoIterations((prev) => prev + 1);
       if (e.key === "ArrowLeft")
         setAlgoIterations((prev) => Math.max(prev - 1, 0));
+      if (e.key === "ArrowDown")
+        setAlgoIterations(0); // Reset iterations to 0
     };
 
     document.addEventListener("keydown", handleAdjustIterationKeybind);
