@@ -42,6 +42,10 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         setAlgoIterations((prev) => Math.max(prev - 1, 0));
       if (e.key === "ArrowDown")
         setAlgoIterations(0); // Reset iterations to 0
+      if (e.key === "ArrowUp") {
+        // Ensure `cy` and `assignConsilience` are accessible here
+        if (cy) assignConsilience(cy, algoIterations);
+      }
     };
 
     document.addEventListener("keydown", handleAdjustIterationKeybind);
@@ -49,7 +53,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     return () => {
       document.removeEventListener("keydown", handleAdjustIterationKeybind);
     };
-  }, []);
+  }, [cy, algoIterations]);
 
   useEffect(() => {
     if (!edgeHandles) return;
