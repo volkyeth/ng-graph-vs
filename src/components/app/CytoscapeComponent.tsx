@@ -26,7 +26,6 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   const [edgeHandles, setEdgeHandles] = useState<EdgeHandlesInstance>();
   const cyContainer = useRef<HTMLDivElement>(null);
   const [elements, setElements] = useAtom(graphStateAtom);
-  const [drawMode, setDrawMode] = useState(true);
   const [algoIterations, setAlgoIterations] = useState(0);
 
   useEffect(() => {
@@ -56,34 +55,10 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   }, [cy, algoIterations]);
 
   useEffect(() => {
-    if (!edgeHandles) return;
-
-    drawMode ? edgeHandles.enableDrawMode() : edgeHandles.disableDrawMode();
-
-    const handleToggleDrawModeKeybind = (e: KeyboardEvent) => {
-      if (e.key === "d") setDrawMode((isEnabled) => !isEnabled);
-    };
-
-    document.addEventListener("keydown", handleToggleDrawModeKeybind);
-
-    return () => {
-      document.removeEventListener("keydown", handleToggleDrawModeKeybind);
-    };
-  }, [edgeHandles, drawMode]);
-
-  useEffect(() => {
     if (!cyContainer.current) return;
-    /**
-     * To use edge connections, we need to remove "negation" edges from the
-     * elements array, then add them back in programatically using the api defined
-     * in the 'cytoscape-edge-connections' library
-     * */
 
     const instance = cytoscape({
       container: cyContainer.current,
-      // autoungrabify: true,
-      // maxZoom: 2,
-      // minZoom: 0.5,
 
       style,
       elements: elements.filter((e) => e.classes === "point"),
@@ -109,19 +84,18 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     });
 
     instance.on("tap", (e) => {
-      instance.add([
-        {
+      if (e.target === instance) { // Check if the tap was on the background
+        instance.add({
+          group: 'nodes',
           data: {
             conviction: 1,
             consilience: 1,
           },
           position: e.position,
           classes: "point",
-        },
-      ]);
+        });
+      }
     });
-
-    // updateLayout(instance, { fit: true, padding: 100 });
 
     const edgeHandlesInstance = instance.edgehandles({
       canConnect: (sourceNode, targetNode) => {
@@ -150,11 +124,10 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       },
       snap: true,
       snapThreshold: 100,
+      start: "cxttapstart taphold", // Adjusted for two finger tap or right click and hold
     });
 
     setEdgeHandles(edgeHandlesInstance);
-
-    // edgeHandlesInstance.enableDrawMode();
 
     instance.on("ehstart", (_, sourceNode: NodeSingular) => {
       if (sourceNode.hasClass("aux-node")) {
@@ -182,7 +155,6 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           classes: "negation",
         });
         addedEdge.remove();
-        // updateLayout(instance, { animate: true });
       }
     );
 
@@ -198,105 +170,104 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     };
 
     const pointMenu = instance.cxtmenu({
-      menuRadius: () => 120, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. Can either be a number or function as in the example.
+      menuRadius: () => 120,
       selector: ".point",
+      outsideMenuCancel: 1,
       commands: [
         {
-          fillColor: "#9f9", // optional: custom background color for item
-          content: "+ 1", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#9f9",
+          content: "+ 1",
+          contentStyle: {},
           select: (e) => {
             setConviction(e, (previous) => previous + 1);
           },
         },
         {
-          fillColor: "#6f6", // optional: custom background color for item
-          content: "+ 5", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#6f6",
+          content: "+ 5",
+          contentStyle: {},
           select: (e) => {
             setConviction(e, (previous) => previous + 5);
           },
         },
         {
-          fillColor: "#3f3", // optional: custom background color for item
-          content: "+ 10", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#3f3",
+          content: "+ 10",
+          contentStyle: {},
           select: (e) => {
             setConviction(e, (previous) => previous + 10);
           },
         },
         {
-          fillColor: "orange", // optional: custom background color for item
-
-          content: "Reset", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "orange",
+          content: "Reset",
+          contentStyle: {},
           select: (e) => {
             setConviction(e, 0);
           },
         },
         {
-          fillColor: "red", // optional: custom background color for item
-
-          content: "Remove", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "red",
+          content: "Remove",
+          contentStyle: {},
           select: (e) => {
             e.closedNeighborhood().edges().remove();
             e.remove();
           },
         },
         {
-          fillColor: "#32f", // optional: custom background color for item
-          content: "- 10", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#32f",
+          content: "- 10",
+          contentStyle: {},
           select: (e) => {
             setConviction(e, (previous) => previous - 10);
           },
         },
         {
-          fillColor: "#66f", // optional: custom background color for item
-          content: "- 5", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#66f",
+          content: "- 5",
+          contentStyle: {},
           select: (e) => {
             setConviction(e, (previous) => previous - 5);
           },
         },
         {
-          fillColor: "#99f", // optional: custom background color for item
-          content: "- 1", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#99f",
+          content: "- 1",
+          contentStyle: {},
           select: (e) => {
             setConviction(e, (previous) => previous - 1);
           },
         },
-      ], // function( ele ){ return [ /*...*/ ] }, // a function that returns commands or a promise of commands
-      fillColor: "rgba(0, 0, 0, 0.75)", // the background colour of the menu
-      activeFillColor: "rgba(1, 105, 217, 0.75)", // the colour used to indicate the selected command
-      activePadding: 0, // additional size in pixels for the active command
-      indicatorSize: 14, // the size in pixels of the pointer to the active command, will default to the node size if the node size is smaller than the indicator size,
-      separatorWidth: 3, // the empty spacing in pixels between successive commands
-      spotlightPadding: 20, // extra spacing in pixels between the element and the spotlight
-      adaptativeNodeSpotlightRadius: false, // specify whether the spotlight radius should adapt to the node size
-      minSpotlightRadius: 20, // the minimum radius in pixels of the spotlight (ignored for the node if adaptativeNodeSpotlightRadius is enabled but still used for the edge & background)
-      maxSpotlightRadius: 300, // the maximum radius in pixels of the spotlight (ignored for the node if adaptativeNodeSpotlightRadius is enabled but still used for the edge & background)
-      openMenuEvents: "cxttapstart taphold", // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
-      itemColor: "white", // the colour of text in the command's content
-      itemTextShadowColor: "transparent", // the text shadow colour of the command's content
-      zIndex: 9999, // the z-index of the ui div
-      atMouse: false, // draw menu at mouse position
-      outsideMenuCancel: false, // if set to a number, this will cancel the command if the pointer
+      ],
+      fillColor: "rgba(0, 0, 0, 0.75)",
+      activeFillColor: "rgba(1, 105, 217, 0.75)",
+      activePadding: 0,
+      indicatorSize: 14,
+      separatorWidth: 3,
+      spotlightPadding: 20,
+      adaptativeNodeSpotlightRadius: false,
+      minSpotlightRadius: 20,
+      maxSpotlightRadius: 300,
+      openMenuEvents: "tap", // Adjusted to open on tap
+      itemColor: "white",
+      itemTextShadowColor: "transparent",
+      zIndex: 9999,
+      atMouse: false,
     });
 
     const targetEdge = (e: NodeSingular) =>
       instance.getElementById(e.data("edgeId"));
 
     const edgeMenu = instance.cxtmenu({
-      menuRadius: () => 120, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. Can either be a number or function as in the example.
+      menuRadius: () => 120,
       selector: ".aux-node",
+      outsideMenuCancel: 1,
       commands: [
         {
-          fillColor: "#9f9", // optional: custom background color for item
-          content: "+ 1", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#9f9",
+          content: "+ 1",
+          contentStyle: {},
           select: (e) => {
             setConviction(
               targetEdge(e as unknown as NodeSingular),
@@ -305,9 +276,9 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#6f6", // optional: custom background color for item
-          content: "+ 5", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#6f6",
+          content: "+ 5",
+          contentStyle: {},
           select: (e) => {
             setConviction(
               targetEdge(e as unknown as NodeSingular),
@@ -316,9 +287,9 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#3f3", // optional: custom background color for item
-          content: "+ 10", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#3f3",
+          content: "+ 10",
+          contentStyle: {},
           select: (e) => {
             setConviction(
               targetEdge(e as unknown as NodeSingular),
@@ -327,28 +298,26 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "orange", // optional: custom background color for item
-
-          content: "Reset", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "orange",
+          content: "Reset",
+          contentStyle: {},
           select: (e) => {
             setConviction(targetEdge(e as unknown as NodeSingular), 0);
           },
         },
         {
-          fillColor: "red", // optional: custom background color for item
-
-          content: "Remove", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "red",
+          content: "Remove",
+          contentStyle: {},
           select: (e) => {
             e.closedNeighborhood().edges().remove();
             targetEdge(e as unknown as NodeSingular).remove();
           },
         },
         {
-          fillColor: "#f33", // optional: custom background color for item
-          content: "- 10", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#f33",
+          content: "- 10",
+          contentStyle: {},
           select: (e) => {
             setConviction(
               targetEdge(e as unknown as NodeSingular),
@@ -357,9 +326,9 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#f66", // optional: custom background color for item
-          content: "- 5", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#f66",
+          content: "- 5",
+          contentStyle: {},
           select: (e) => {
             setConviction(
               targetEdge(e as unknown as NodeSingular),
@@ -368,9 +337,9 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           },
         },
         {
-          fillColor: "#f99", // optional: custom background color for item
-          content: "- 1", // html/text content to be displayed in the menu
-          contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+          fillColor: "#f99",
+          content: "- 1",
+          contentStyle: {},
           select: (e) => {
             setConviction(
               targetEdge(e as unknown as NodeSingular),
@@ -378,22 +347,21 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
             );
           },
         },
-      ], // function( ele ){ return [ /*...*/ ] }, // a function that returns commands or a promise of commands
-      fillColor: "rgba(0, 0, 0, 0.75)", // the background colour of the menu
-      activeFillColor: "rgba(1, 105, 217, 0.75)", // the colour used to indicate the selected command
-      activePadding: 0, // additional size in pixels for the active command
-      indicatorSize: 14, // the size in pixels of the pointer to the active command, will default to the node size if the node size is smaller than the indicator size,
-      separatorWidth: 3, // the empty spacing in pixels between successive commands
-      spotlightPadding: 20, // extra spacing in pixels between the element and the spotlight
-      adaptativeNodeSpotlightRadius: false, // specify whether the spotlight radius should adapt to the node size
-      minSpotlightRadius: 20, // the minimum radius in pixels of the spotlight (ignored for the node if adaptativeNodeSpotlightRadius is enabled but still used for the edge & background)
-      maxSpotlightRadius: 300, // the maximum radius in pixels of the spotlight (ignored for the node if adaptativeNodeSpotlightRadius is enabled but still used for the edge & background)
-      openMenuEvents: "cxttapstart taphold", // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
-      itemColor: "white", // the colour of text in the command's content
-      itemTextShadowColor: "transparent", // the text shadow colour of the command's content
-      zIndex: 9999, // the z-index of the ui div
-      atMouse: false, // draw menu at mouse position
-      outsideMenuCancel: false, // if set to a number, this will cancel the command if the pointer
+      ],
+      fillColor: "rgba(0, 0, 0, 0.75)",
+      activeFillColor: "rgba(1, 105, 217, 0.75)",
+      activePadding: 0,
+      indicatorSize: 14,
+      separatorWidth: 3,
+      spotlightPadding: 20,
+      adaptativeNodeSpotlightRadius: false,
+      minSpotlightRadius: 20,
+      maxSpotlightRadius: 300,
+      openMenuEvents: "tap", // Adjusted to open on tap
+      itemColor: "white",
+      itemTextShadowColor: "transparent",
+      zIndex: 9999,
+      atMouse: false,
     });
 
     return () => {
@@ -406,19 +374,12 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   return (
     <div
       className={cn(
-        "w-full h-full relative border-2 border-transparent",
-        drawMode && "border-purple-500"
+        "w-full h-full relative border-2 border-transparent"
       )}
     >
       <div ref={cyContainer} className="w-full h-full" />
       <div className="flex absolute gap-2 top-2 right-2">
         <p className="border p-2">Iterations: {algoIterations}</p>
-        <button
-          className={cn("border p-2", !drawMode && "bg-purple-300")}
-          onClick={() => setDrawMode((isEnabled) => !isEnabled)}
-        >
-          {drawMode ? "Disable drawing" : "Enable drawing"} (D)
-        </button>
       </div>
     </div>
   );
