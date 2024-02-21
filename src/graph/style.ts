@@ -46,6 +46,12 @@ export const style: cytoscape.Stylesheet[] = [
       "curve-style": "straight",
     },
   },
+  {
+    selector: ".point:selected",
+    style: {
+      "border-color": "blue",
+    },
+  },
 ];
 
 const getColor = (consilience: number) =>

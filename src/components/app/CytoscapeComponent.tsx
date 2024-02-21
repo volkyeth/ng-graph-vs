@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import cytoscape, { EdgeSingular, NodeSingular, Singular } from "cytoscape";
 import cxtmenu from "cytoscape-cxtmenu";
 import edgeConnections from "cytoscape-edge-connections";
-import edgehandles, { EdgeHandlesInstance } from "cytoscape-edgehandles";
+import edgehandles from "cytoscape-edgehandles";
 import { useAtom } from "jotai";
 import React, { useEffect, useRef, useState } from "react";
 import { assignConsilience } from "./assignConsilience";
@@ -23,7 +23,6 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   ...cyProps
 }) => {
   const [cy, setCy] = useAtom(cyInstanceAtom);
-  const [edgeHandles, setEdgeHandles] = useState<EdgeHandlesInstance>();
   const cyContainer = useRef<HTMLDivElement>(null);
   const [elements, setElements] = useAtom(graphStateAtom);
   const [algoIterations, setAlgoIterations] = useState(0);
@@ -39,8 +38,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       if (e.key === "ArrowRight") setAlgoIterations((prev) => prev + 1);
       if (e.key === "ArrowLeft")
         setAlgoIterations((prev) => Math.max(prev - 1, 0));
-      if (e.key === "ArrowDown")
-        setAlgoIterations(0); // Reset iterations to 0
+      if (e.key === "ArrowDown") setAlgoIterations(0); // Reset iterations to 0
       if (e.key === "ArrowUp") {
         // Ensure `cy` and `assignConsilience` are accessible here
         if (cy) assignConsilience(cy, algoIterations);
@@ -56,110 +54,120 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
 
   useEffect(() => {
     if (!cy) return;
-  
-    const ehOptions = {
+
+    const eh = cy.edgehandles({
+      canConnect: (sourceNode, targetNode) => {
+        if (sourceNode === targetNode) return false;
+
+        // if edge already exists
+        if (sourceNode.edgesTo(targetNode).length > 0) return false;
+        if (targetNode.edgesTo(sourceNode).length > 0) return false;
+
+        const sourceType = sourceNode.hasClass("aux-node") ? "aux" : "point";
+        if (sourceType === "aux") return false;
+
+        const targetType = targetNode.hasClass("aux-node") ? "aux" : "point";
+        if (targetType === "point") return true;
+
+        const targetEdge = cy.$(
+          `#${targetNode.data("edgeId")}`
+        ) as EdgeSingular;
+        if (
+          targetEdge.source() === sourceNode ||
+          targetEdge.target() === sourceNode
+        )
+          return false;
+
+        return true;
+      },
       snap: true,
       snapThreshold: 100,
-      noEdgeEventsInDraw: true,
-      complete: (sourceNode, targetNode, addedEles) => {
-        // Logic to handle the newly created edge
-        console.log("Edge creation completed");
-      },
-    };
-  
-    const eh = cy.edgehandles(ehOptions);
-  
+    });
+
     // Listen for the `cxttapstart` event to initiate edge creation
-    cy.on('cxttapstart', 'node', (event) => {
+    cy.on("cxttapstart", ".point", (event) => {
       const node = event.target;
       eh.start(node); // Start edge drawing from the node
     });
-  
+
     // Listen for the `ehstop` event to finalize edge creation
-    cy.on('ehstop', (event, sourceNode) => {
-      console.log("Edge creation stopped", sourceNode);
-      // Additional logic to finalize edge creation if necessary
+    cy.on("cxttapend", ".point,.aux-node", () => {
+      eh.stop();
     });
-  
-    eh.enable();
+
+    cy.on("ehstart", (_, sourceNode: NodeSingular) => {
+      if (sourceNode.hasClass("aux-node")) {
+        eh.stop();
+      }
+    });
+
+    cy.on(
+      "ehcomplete",
+      (
+        e,
+        sourceNode: NodeSingular,
+        targetNode: NodeSingular,
+        addedEdge: EdgeSingular
+      ) => {
+        // @ts-expect-error Property does not exist
+        cy.edgeConnections().addEdge({
+          data: {
+            source: sourceNode.id(),
+            target: targetNode.id(),
+            conviction: 1,
+            consilience: 1,
+          },
+          classes: "negation",
+        });
+        addedEdge.remove();
+      }
+    );
+
+    return () => {
+      eh.destroy();
+      cy.off("cxttapstart");
+      cy.off("cxttapend");
+      cy.off("ehstart");
+      cy.off("ehcomplete");
+    };
   }, [cy]);
 
   useEffect(() => {
     if (!cy) return;
-  
-    let tempNodeId: string | null = null; // Explicitly declare tempNodeId as string or null
-  
-    // Function to remove the temporary node if it exists
-    const removeTempNode = () => {
-      if (tempNodeId) { // This check ensures tempNodeId is not null
-        cy.getElementById(tempNodeId).remove();
-        tempNodeId = null;
-      }
-    };
 
-    // Listen for tap events on the background to create a transparent node
-    cy.on('tap', (event) => {
-      if (event.target === cy) {
-        if (tempNodeId === null) {
-          const position = event.position;
-          // Create a temporary node with minimal visibility
-          const tempNode = cy.add({
-            group: 'nodes',
-            data: { id: 'tempNode', label: 'Temp' }, // Temporary data
-            position,
-            classes: 'temporary-node' // Use this class to style the node as mostly transparent
-          });
-          tempNodeId = tempNode.id(); // Store the ID of the temporary node
-        } else {
-          removeTempNode(); // Remove existing temp node if any
-        }
-      }
+    // Listen for double tap events on the background to create a point
+    cy.on("dbltap", (event) => {
+      if (event.target !== cy) return;
+
+      cy.add({
+        group: "nodes",
+        data: {
+          conviction: 1,
+          consilience: 1,
+        },
+        position: event.position,
+        classes: "point", // Assuming "point" class is for standard nodes
+      });
     });
 
-    // Listen for tap events on nodes
-    cy.on('tap', 'node', (event) => {
-      const nodeId = event.target.id();
-      if (nodeId === tempNodeId) {
-        // Ensure tempNodeId is not null before using it
-        if (tempNodeId !== null) {
-          cy.getElementById(tempNodeId).remove(); // Remove the temporary node
-        }
-        cy.add({
-          group: 'nodes',
-          data: {
-            conviction: 1,
-            consilience: 1,
-          },
-          position: event.target.position(),
-          classes: "point", // Assuming "point" class is for standard nodes
-        });
-        tempNodeId = null; // Reset tempNodeId as it's no longer temporary
-      } else {
-        // Clicked on a different node, remove the temporary node
-        removeTempNode();
-      }
+    cy.on("tap", (event) => {
+      if (event.target !== cy) return;
+
+      cy.elements().unselect();
     });
 
-    // Ensure temporary node is removed if the tap is on the edge or elsewhere
-    cy.on('tap', 'edge', removeTempNode);
-  
     return () => {
       // Clean up listeners
-      cy.off('tap');
-      cy.off('cxttap');
-      cy.off('tap', 'node');
-      cy.off('tap', 'edge');
+      cy.off("dbltap");
+      cy.off("tap");
     };
   }, [cy]);
-
-  
 
   useEffect(() => {
     if (!cyContainer.current) return;
 
     const instance = cytoscape({
       container: cyContainer.current,
-
       style,
       elements: elements.filter((e) => e.classes === "point"),
       layout: { name: "preset", fit: true, padding: 200 },
@@ -175,75 +183,9 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
 
     setCy?.(instance);
 
-    instance.on("select", (e) => {
-      console.log(e.target.classes(), e.target.data());
-    });
-
     instance.on("add remove position data", () => {
       setElements(instance.elements(".point,.negation").jsons());
     });
-
-    const edgeHandlesInstance = instance.edgehandles({
-      canConnect: (sourceNode, targetNode) => {
-        if (sourceNode === targetNode) return false;
-
-        // if edge already exists
-        if (sourceNode.edgesTo(targetNode).length > 0) return false;
-        if (targetNode.edgesTo(sourceNode).length > 0) return false;
-
-        const sourceType = sourceNode.hasClass("aux-node") ? "aux" : "point";
-        if (sourceType === "aux") return false;
-
-        const targetType = targetNode.hasClass("aux-node") ? "aux" : "point";
-        if (targetType === "point") return true;
-
-        const targetEdge = instance.$(
-          `#${targetNode.data("edgeId")}`
-        ) as EdgeSingular;
-        if (
-          targetEdge.source() === sourceNode ||
-          targetEdge.target() === sourceNode
-        )
-          return false;
-
-        return true;
-      },
-      snap: true,
-      snapThreshold: 100
-    });
-
-    setEdgeHandles(edgeHandlesInstance);
-
-    
-
-    instance.on("ehstart", (_, sourceNode: NodeSingular) => {
-      if (sourceNode.hasClass("aux-node")) {
-        edgeHandlesInstance.stop();
-      }
-    });
-
-    instance.on(
-      "ehcomplete",
-      (
-        e,
-        sourceNode: NodeSingular,
-        targetNode: NodeSingular,
-        addedEdge: EdgeSingular
-      ) => {
-        console.log("ehcomplete", e, sourceNode, targetNode, addedEdge);
-
-        edgeConnections.addEdge({
-          data: {
-            source: sourceNode.id(),
-            target: targetNode.id(),
-            conviction: 1,
-            consilience: 1,
-          },
-          classes: "negation",
-        });
-        addedEdge.remove();
-      }
-    );
 
     const setConviction = (
       e: Singular,
@@ -459,11 +401,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   }, [cyContainer, setCy]);
 
   return (
-    <div
-      className={cn(
-        "w-full h-full relative border-2 border-transparent"
-      )}
-    >
+    <div className={cn("w-full h-full relative border-2 border-transparent")}>
       <div ref={cyContainer} className="w-full h-full" />
       <div className="flex absolute gap-2 top-2 right-2">
         <p className="border p-2">Iterations: {algoIterations}</p>
