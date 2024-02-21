@@ -57,6 +57,36 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   useEffect(() => {
     if (!cy) return;
   
+    const ehOptions = {
+      snap: true,
+      snapThreshold: 100,
+      noEdgeEventsInDraw: true,
+      complete: (sourceNode, targetNode, addedEles) => {
+        // Logic to handle the newly created edge
+        console.log("Edge creation completed");
+      },
+    };
+  
+    const eh = cy.edgehandles(ehOptions);
+  
+    // Listen for the `cxttapstart` event to initiate edge creation
+    cy.on('cxttapstart', 'node', (event) => {
+      const node = event.target;
+      eh.start(node); // Start edge drawing from the node
+    });
+  
+    // Listen for the `ehstop` event to finalize edge creation
+    cy.on('ehstop', (event, sourceNode) => {
+      console.log("Edge creation stopped", sourceNode);
+      // Additional logic to finalize edge creation if necessary
+    });
+  
+    eh.enable();
+  }, [cy]);
+
+  useEffect(() => {
+    if (!cy) return;
+  
     let tempNodeId = null; // To keep track of the temporary node
   
     // Function to remove the temporary node if it exists
@@ -124,6 +154,8 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     };
   }, [cy]);
 
+  
+
   useEffect(() => {
     if (!cyContainer.current) return;
 
@@ -153,20 +185,6 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       setElements(instance.elements(".point,.negation").jsons());
     });
 
-    // instance.on("tap", (e) => {
-    //   if (e.target === instance) { // Check if the tap was on the background
-    //     instance.add({
-    //       group: 'nodes',
-    //       data: {
-    //         conviction: 1,
-    //         consilience: 1,
-    //       },
-    //       position: e.position,
-    //       classes: "point",
-    //     });
-    //   }
-    // });
-
     const edgeHandlesInstance = instance.edgehandles({
       canConnect: (sourceNode, targetNode) => {
         if (sourceNode === targetNode) return false;
@@ -193,11 +211,12 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         return true;
       },
       snap: true,
-      snapThreshold: 100,
-      start: "cxttapstart taphold", // Adjusted for two finger tap or right click and hold
+      snapThreshold: 100
     });
 
     setEdgeHandles(edgeHandlesInstance);
+
+    
 
     instance.on("ehstart", (_, sourceNode: NodeSingular) => {
       if (sourceNode.hasClass("aux-node")) {
