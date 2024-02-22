@@ -13,10 +13,10 @@ export const assignConsilience = (cytoscape: Core, iterations: number) => {
 
   for (let i = 0; i < iterations; i++) {
     points.forEach((point) => {
-      point.scratch("previousConsilience", point.data("consilience"));
+      point.scratch("roundConsilience", point.data("consilience"));
     });
     negations.forEach((negation) => {
-      negation.scratch("previousConsilience", negation.data("consilience"));
+      negation.scratch("roundConsilience", negation.data("consilience"));
     });
     negations.forEach((negation) => {
       const source = negation.source().hasClass("point")
@@ -25,7 +25,7 @@ export const assignConsilience = (cytoscape: Core, iterations: number) => {
       const target = negation.target().hasClass("point")
         ? negation.target()
         : getNegationEdge(negation.target());
-      const relevance = negation.scratch("previousConsilience");
+      const relevance = negation.scratch("roundConsilience");
       attack(source, target, relevance);
       attack(target, source, relevance);
     });
@@ -39,11 +39,15 @@ const attack = (
   target: NodeSingular | EdgeSingular,
   relevance: number
 ) => {
+  const attackSign = source.scratch("roundConsilience") > 0 ? 1 : -1;
   const attackPower = Math.min(
-    source.scratch("previousConsilience"),
+    Math.abs(source.scratch("roundConsilience")),
     relevance
   );
-  target.data("consilience", target.data("consilience") - attackPower);
+  target.data(
+    "consilience",
+    target.data("consilience") - attackPower * attackSign
+  );
 };
 
 const getNegationEdge = (auxNode: NodeSingular) =>
