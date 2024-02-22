@@ -1,9 +1,8 @@
-import { Core, NodeSingular } from "cytoscape";
+import { Core, EdgeSingular, NodeSingular } from "cytoscape";
 
 export const assignConsilience = (cytoscape: Core, iterations: number) => {
   const points = cytoscape.nodes(".point");
   const negations = cytoscape.edges(".negation");
-  const auxNodes = cytoscape.nodes(".aux-node");
 
   points.forEach((point) => {
     point.data("consilience", point.data("conviction"));
@@ -13,12 +12,6 @@ export const assignConsilience = (cytoscape: Core, iterations: number) => {
   });
 
   for (let i = 0; i < iterations; i++) {
-    auxNodes.forEach((auxNode) => {
-      auxNode.scratch(
-        "previousConsilience",
-        cytoscape.getElementById(auxNode.data("edgeId")).data("consilience")
-      );
-    });
     points.forEach((point) => {
       point.scratch("previousConsilience", point.data("consilience"));
     });
@@ -26,9 +19,15 @@ export const assignConsilience = (cytoscape: Core, iterations: number) => {
       negation.scratch("previousConsilience", negation.data("consilience"));
     });
     negations.forEach((negation) => {
+      const source = negation.source().hasClass("point")
+        ? negation.source()
+        : getNegationEdge(negation.source());
+      const target = negation.target().hasClass("point")
+        ? negation.target()
+        : getNegationEdge(negation.target());
       const relevance = negation.scratch("previousConsilience");
-      attack(negation.source(), negation.target(), relevance);
-      attack(negation.target(), negation.source(), relevance);
+      attack(source, target, relevance);
+      attack(target, source, relevance);
     });
   }
 
@@ -36,8 +35,8 @@ export const assignConsilience = (cytoscape: Core, iterations: number) => {
 };
 
 const attack = (
-  source: NodeSingular,
-  target: NodeSingular,
+  source: NodeSingular | EdgeSingular,
+  target: NodeSingular | EdgeSingular,
   relevance: number
 ) => {
   const attackPower = Math.min(
@@ -46,3 +45,6 @@ const attack = (
   );
   target.data("consilience", target.data("consilience") - attackPower);
 };
+
+const getNegationEdge = (auxNode: NodeSingular) =>
+  auxNode.cy().getElementById(auxNode.data("edgeId")) as EdgeSingular;
