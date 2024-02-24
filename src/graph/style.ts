@@ -24,11 +24,11 @@ export const style: cytoscape.Stylesheet[] = [
     style: {
       "background-color": (node: NodeSingular) =>
         getColor(
-          node.cy().getElementById(node.data("edgeId")).data("consilience")
+          node.cy().getElementById(node.data("edgeId")).data("relevance")
         ),
       label: (node: NodeSingular) => {
         const negation = node.cy().getElementById(node.data("edgeId"));
-        return `${negation.data("consilience") ?? "-"}/${negation.data(
+        return `${negation.data("relevance") ?? "-"}/${negation.data(
           "conviction"
         )}`;
       },

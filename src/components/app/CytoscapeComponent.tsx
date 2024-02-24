@@ -1,5 +1,6 @@
 import { graphStateAtom } from "@/graph/state";
 import { cyInstanceAtom } from "@/hooks/useCyInstance";
+import { AlgorithmName, algorithms } from "@/lib/algorithms";
 import { cn } from "@/lib/utils";
 import cytoscape, { EdgeSingular, NodeSingular, Singular } from "cytoscape";
 import cxtmenu from "cytoscape-cxtmenu";
@@ -7,7 +8,6 @@ import edgeConnections from "cytoscape-edge-connections";
 import edgehandles from "cytoscape-edgehandles";
 import { useAtom } from "jotai";
 import React, { useEffect, useRef, useState } from "react";
-import { assignConsilience } from "./assignConsilience";
 
 cytoscape.use(edgehandles);
 cytoscape.use(cxtmenu);
@@ -26,12 +26,13 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   const cyContainer = useRef<HTMLDivElement>(null);
   const [elements, setElements] = useAtom(graphStateAtom);
   const [algoIterations, setAlgoIterations] = useState(0);
+  const [algo, setAlgo] = useState<AlgorithmName>("naive");
 
   useEffect(() => {
     if (!cy) return;
 
-    assignConsilience(cy, algoIterations);
-  }, [cy, algoIterations]);
+    algorithms[algo].assignConsilience(cy, algoIterations);
+  }, [cy, algoIterations, algo]);
 
   useEffect(() => {
     const handleAdjustIterationKeybind = (e: KeyboardEvent) => {
@@ -41,7 +42,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       if (e.key === "ArrowDown") setAlgoIterations(0); // Reset iterations to 0
       if (e.key === "ArrowUp") {
         // Ensure `cy` and `assignConsilience` are accessible here
-        if (cy) assignConsilience(cy, algoIterations);
+        if (cy) algorithms[algo].assignConsilience(cy, algoIterations);
       }
     };
 
@@ -404,6 +405,12 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     <div className={cn("w-full h-full relative border-2 border-transparent")}>
       <div ref={cyContainer} className="w-full h-full" />
       <div className="flex absolute gap-2 top-2 right-2">
+        <select
+          className="border p-2"
+          onChange={(e) => setAlgo(e.target.value as AlgorithmName)}
+        >
+          <option value="naive">Naive</option>
+        </select>
         <p className="border p-2">Iterations: {algoIterations}</p>
       </div>
     </div>
