@@ -441,6 +441,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       <div ref={cyContainer} className="w-full h-full" />
       <div className="flex absolute gap-2 top-2 right-2">
         <select
+          value={algo}
           className="border p-2"
           onChange={(e) => setAlgo(e.target.value as AlgorithmName)}
         >
