@@ -126,6 +126,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           data: {
             relevance: 1,
             conviction: 1,
+            timestamp: Date.now(),
           },
           locked: true,
           position: {
@@ -445,7 +446,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         >
           {algorithmNames.map((name) => (
             <option key={name} value={name}>
-              {name.charAt(0).toUpperCase() + name.slice(1)}
+              {algorithms[name].name}
             </option>
           ))}
         </select>

@@ -1,7 +1,9 @@
+import { lifoRelevance } from "./lifoRelevance";
 import { naive } from "./naive";
 
 export const algorithms = {
-  naive: naive,
+  naive,
+  lifoRelevance,
 };
 
 export const algorithmNames = Object.keys(algorithms) as AlgorithmName[];
