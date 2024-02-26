@@ -2,20 +2,20 @@ import { NodeSingular } from "cytoscape";
 import { Algorithm } from "./Algorithm";
 /**
  * @description This is a naive algorithm that runs all attacks in parallel from the first iteration
- * - The initial consilience of a point or negation is its conviction
- * - On each round, every point simultaneously attacks every neighbor with its consilience
- *  - The attack power is modulated by the consilience of the negation
- *  - The attack can be positive or negative, depending on the sign of the consilience
- *  - The consilience of a point or negation is updated by the sum of all attacks
+ * - The initial credence of a point or negation is its conviction
+ * - On each round, every point simultaneously attacks every neighbor with its credence
+ *  - The attack power is modulated by the credence of the negation
+ *  - The attack can be positive or negative, depending on the sign of the credence
+ *  - The credence of a point or negation is updated by the sum of all attacks
  */
 export const naive: Algorithm = {
   name: "Naive",
-  assignConsilience: (cytoscape, iterations) => {
+  assignCredence: (cytoscape, iterations) => {
     const points = cytoscape.nodes(".point");
     const relevanceNodes = cytoscape.nodes(".relevance");
 
     points.forEach((point) => {
-      point.data("consilience", point.data("conviction"));
+      point.data("credence", point.data("conviction"));
     });
     relevanceNodes.forEach((relevanceNode) => {
       relevanceNode.data("relevance", relevanceNode.data("conviction"));
@@ -23,7 +23,7 @@ export const naive: Algorithm = {
 
     for (let i = 0; i < iterations; i++) {
       points.forEach((point) => {
-        point.scratch("roundConsilience", point.data("consilience"));
+        point.scratch("roundCredence", point.data("credence"));
       });
       relevanceNodes.forEach((relevanceNode) => {
         relevanceNode.scratch(
@@ -53,7 +53,7 @@ const attack = (
   if (!source.hasClass("point")) return;
 
   target.hasClass("point")
-    ? attackConsilience(source, target, relevance)
+    ? attackCredence(source, target, relevance)
     : attackRelevance(source, target, relevance);
 };
 
@@ -62,9 +62,9 @@ const attackRelevance = (
   target: NodeSingular,
   relevance: number
 ) => {
-  const attackSign = source.scratch("roundConsilience") > 0 ? 1 : -1;
+  const attackSign = source.scratch("roundCredence") > 0 ? 1 : -1;
   const attackPower = Math.min(
-    Math.abs(source.scratch("roundConsilience")),
+    Math.abs(source.scratch("roundCredence")),
     relevance
   );
 
@@ -75,19 +75,16 @@ const attackRelevance = (
   );
 };
 
-const attackConsilience = (
+const attackCredence = (
   source: NodeSingular,
   target: NodeSingular,
   relevance: number
 ) => {
-  const attackSign = source.scratch("roundConsilience") > 0 ? 1 : -1;
+  const attackSign = source.scratch("roundCredence") > 0 ? 1 : -1;
   const attackPower = Math.min(
-    Math.abs(source.scratch("roundConsilience")),
+    Math.abs(source.scratch("roundCredence")),
     relevance
   );
 
-  target.data(
-    "consilience",
-    target.data("consilience") - attackPower * attackSign
-  );
+  target.data("credence", target.data("credence") - attackPower * attackSign);
 };

@@ -34,7 +34,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   useEffect(() => {
     if (!cy) return;
 
-    algorithms[algo].assignConsilience(cy, algoIterations);
+    algorithms[algo].assignCredence(cy, algoIterations);
   }, [cy, algoIterations, algo]);
 
   useEffect(() => {
@@ -44,8 +44,8 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         setAlgoIterations((prev) => Math.max(prev - 1, 0));
       if (e.key === "ArrowDown") setAlgoIterations(0); // Reset iterations to 0
       if (e.key === "ArrowUp") {
-        // Ensure `cy` and `assignConsilience` are accessible here
-        if (cy) algorithms[algo].assignConsilience(cy, algoIterations);
+        // Ensure `cy` and `assignCredence` are accessible here
+        if (cy) algorithms[algo].assignCredence(cy, algoIterations);
       }
     };
 
@@ -177,7 +177,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         group: "nodes",
         data: {
           conviction: 1,
-          consilience: 1,
+          credence: 1,
         },
         position: event.position,
         classes: "point", // Assuming "point" class is for standard nodes

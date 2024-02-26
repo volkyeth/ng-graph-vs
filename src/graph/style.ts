@@ -5,14 +5,14 @@ export const style: cytoscape.Stylesheet[] = [
     selector: "node.point",
     style: {
       "background-color": (node: NodeSingular) =>
-        getColor(node.data("consilience")),
+        getColor(node.data("credence")),
       "border-color": "#aaa",
       "border-width": 1,
       shape: "ellipse",
       width: "100px",
       height: "100px",
       label: (point: NodeSingular) =>
-        `${point.data("consilience") ?? "-"}/${point.data("conviction")}`,
+        `${point.data("credence") ?? "-"}/${point.data("conviction")}`,
       "text-wrap": "wrap",
       "text-justification": "left",
       "text-max-width": "360px",

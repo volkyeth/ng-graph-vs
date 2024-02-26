@@ -2,5 +2,5 @@ import { Core } from "cytoscape";
 
 export interface Algorithm {
   name: string;
-  assignConsilience: (cytoscape: Core, iterations: number) => void;
+  assignCredence: (cytoscape: Core, iterations: number) => void;
 }
