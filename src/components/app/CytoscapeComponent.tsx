@@ -29,7 +29,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   const cyContainer = useRef<HTMLDivElement>(null);
   const [elements, setElements] = useAtom(graphStateAtom);
   const [algoIterations, setAlgoIterations] = useState(0);
-  const [algo, setAlgo] = useState<AlgorithmName>("naive");
+  const [algo, setAlgo] = useState<AlgorithmName>("lifoRelevance");
 
   useEffect(() => {
     if (!cy) return;
