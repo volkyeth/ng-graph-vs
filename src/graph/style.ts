@@ -50,6 +50,6 @@ export const style: cytoscape.Stylesheet[] = [
 ];
 
 const getColor = (intensity: number) =>
-  `hsl(${intensity > 0 ? 120 : 240}, 100%, ${
+  `hsl(${intensity > 0 ? 120 : 200}, 100%, ${
     100 - Math.min(Math.abs(intensity), 50)
   }%)`;
