@@ -237,96 +237,9 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       );
     };
 
-    const pointMenu = instance.cxtmenu({
+    const convictionMenu = instance.cxtmenu({
       menuRadius: () => 120,
-      selector: ".point",
-      outsideMenuCancel: 1,
-      commands: [
-        {
-          fillColor: "#9f9",
-          content: "+ 1",
-          contentStyle: {},
-          select: (e) => {
-            setConviction(e, (previous) => previous + 1);
-          },
-        },
-        {
-          fillColor: "#6f6",
-          content: "+ 5",
-          contentStyle: {},
-          select: (e) => {
-            setConviction(e, (previous) => previous + 5);
-          },
-        },
-        {
-          fillColor: "#3f3",
-          content: "+ 10",
-          contentStyle: {},
-          select: (e) => {
-            setConviction(e, (previous) => previous + 10);
-          },
-        },
-        {
-          fillColor: "orange",
-          content: "Reset",
-          contentStyle: {},
-          select: (e) => {
-            setConviction(e, 0);
-          },
-        },
-        {
-          fillColor: "red",
-          content: "Remove",
-          contentStyle: {},
-          select: (e) => {
-            e.closedNeighborhood().edges().remove();
-            e.remove();
-          },
-        },
-        {
-          fillColor: "#32f",
-          content: "- 10",
-          contentStyle: {},
-          select: (e) => {
-            setConviction(e, (previous) => previous - 10);
-          },
-        },
-        {
-          fillColor: "#66f",
-          content: "- 5",
-          contentStyle: {},
-          select: (e) => {
-            setConviction(e, (previous) => previous - 5);
-          },
-        },
-        {
-          fillColor: "#99f",
-          content: "- 1",
-          contentStyle: {},
-          select: (e) => {
-            setConviction(e, (previous) => previous - 1);
-          },
-        },
-      ],
-      fillColor: "rgba(0, 0, 0, 0.75)",
-      activeFillColor: "rgba(1, 105, 217, 0.75)",
-      activePadding: 0,
-      indicatorSize: 14,
-      separatorWidth: 3,
-      spotlightPadding: 20,
-      adaptativeNodeSpotlightRadius: false,
-      minSpotlightRadius: 20,
-      maxSpotlightRadius: 300,
-      openMenuEvents: "tap", // Adjusted to open on tap
-      itemColor: "white",
-      itemTextShadowColor: "transparent",
-      zIndex: 9999,
-      atMouse: false,
-    });
-
-    const edgeMenu = instance.cxtmenu({
-      menuRadius: () => 120,
-      selector: ".relevance",
+      selector: ".point,.relevance",
       outsideMenuCancel: 1,
       commands: [
         {
@@ -412,8 +325,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     });
 
     return () => {
-      pointMenu.destroy();
-      edgeMenu.destroy();
+      convictionMenu.destroy();
       instance.destroy();
     };
   }, [cyContainer, setCy]);
