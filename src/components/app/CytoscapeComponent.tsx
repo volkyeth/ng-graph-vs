@@ -34,7 +34,10 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   useEffect(() => {
     if (!cy) return;
 
-    algorithms[algo].assignCredence(cy, algoIterations);
+    const updateCredence = () =>
+      algorithms[algo].assignCredence(cy, algoIterations);
+
+    updateCredence();
   }, [cy, algoIterations, algo]);
 
   useEffect(() => {
@@ -321,9 +324,6 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       atMouse: false,
     });
 
-    const targetEdge = (e: NodeSingular) =>
-      instance.getElementById(e.data("edgeId"));
-
     const edgeMenu = instance.cxtmenu({
       menuRadius: () => 120,
       selector: ".relevance",
@@ -334,10 +334,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           content: "+ 1",
           contentStyle: {},
           select: (e) => {
-            setConviction(
-              targetEdge(e as unknown as NodeSingular),
-              (previous) => previous + 1
-            );
+            setConviction(e, (previous) => previous + 1);
           },
         },
         {
@@ -345,10 +342,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           content: "+ 5",
           contentStyle: {},
           select: (e) => {
-            setConviction(
-              targetEdge(e as unknown as NodeSingular),
-              (previous) => previous + 5
-            );
+            setConviction(e, (previous) => previous + 5);
           },
         },
         {
@@ -356,10 +350,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           content: "+ 10",
           contentStyle: {},
           select: (e) => {
-            setConviction(
-              targetEdge(e as unknown as NodeSingular),
-              (previous) => previous + 10
-            );
+            setConviction(e, (previous) => previous + 10);
           },
         },
         {
@@ -367,7 +358,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           content: "Reset",
           contentStyle: {},
           select: (e) => {
-            setConviction(targetEdge(e as unknown as NodeSingular), 0);
+            setConviction(e, 0);
           },
         },
         {
@@ -376,7 +367,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           contentStyle: {},
           select: (e) => {
             e.closedNeighborhood().edges().remove();
-            targetEdge(e as unknown as NodeSingular).remove();
+            e.remove();
           },
         },
         {
@@ -384,10 +375,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           content: "- 10",
           contentStyle: {},
           select: (e) => {
-            setConviction(
-              targetEdge(e as unknown as NodeSingular),
-              (previous) => previous - 10
-            );
+            setConviction(e, (previous) => previous - 10);
           },
         },
         {
@@ -395,10 +383,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           content: "- 5",
           contentStyle: {},
           select: (e) => {
-            setConviction(
-              targetEdge(e as unknown as NodeSingular),
-              (previous) => previous - 5
-            );
+            setConviction(e, (previous) => previous - 5);
           },
         },
         {
@@ -406,10 +391,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           content: "- 1",
           contentStyle: {},
           select: (e) => {
-            setConviction(
-              targetEdge(e as unknown as NodeSingular),
-              (previous) => previous - 1
-            );
+            setConviction(e, (previous) => previous - 1);
           },
         },
       ],
