@@ -1,17 +1,20 @@
 import { graphStateAtom } from "@/graph/state";
 import { cyInstanceAtom } from "@/hooks/useCyInstance";
-import { AlgorithmName, algorithms } from "@/lib/algorithms";
+import { AlgorithmName, algorithmNames, algorithms } from "@/lib/algorithms";
 import { cn } from "@/lib/utils";
-import cytoscape, { EdgeSingular, NodeSingular, Singular } from "cytoscape";
+import cytoscape, {
+  EdgeSingular,
+  EventObjectNode,
+  NodeSingular,
+  Singular,
+} from "cytoscape";
 import cxtmenu from "cytoscape-cxtmenu";
-import edgeConnections from "cytoscape-edge-connections";
 import edgehandles from "cytoscape-edgehandles";
 import { useAtom } from "jotai";
 import React, { useEffect, useRef, useState } from "react";
 
 cytoscape.use(edgehandles);
 cytoscape.use(cxtmenu);
-cytoscape.use(edgeConnections);
 
 interface CytoscapeComponentProps {
   elements?: cytoscape.ElementsDefinition;
@@ -64,10 +67,14 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         if (sourceNode.edgesTo(targetNode).length > 0) return false;
         if (targetNode.edgesTo(sourceNode).length > 0) return false;
 
-        const sourceType = sourceNode.hasClass("aux-node") ? "aux" : "point";
-        if (sourceType === "aux") return false;
+        const sourceType = sourceNode.hasClass("relevance")
+          ? "relevance"
+          : "point";
+        if (sourceType === "relevance") return false;
 
-        const targetType = targetNode.hasClass("aux-node") ? "aux" : "point";
+        const targetType = targetNode.hasClass("relevance")
+          ? "relevance"
+          : "point";
         if (targetType === "point") return true;
 
         const targetEdge = cy.$(
@@ -92,12 +99,12 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     });
 
     // Listen for the `ehstop` event to finalize edge creation
-    cy.on("cxttapend", ".point,.aux-node", () => {
+    cy.on("cxttapend", ".point,.relevance", () => {
       eh.stop();
     });
 
     cy.on("ehstart", (_, sourceNode: NodeSingular) => {
-      if (sourceNode.hasClass("aux-node")) {
+      if (sourceNode.hasClass("relevance")) {
         eh.stop();
       }
     });
@@ -110,16 +117,42 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         targetNode: NodeSingular,
         addedEdge: EdgeSingular
       ) => {
-        // @ts-expect-error Property does not exist
-        cy.edgeConnections().addEdge({
+        const sourcePosition = sourceNode.position();
+        const targetPosition = targetNode.position();
+
+        const relevanceNode = cy.add({
+          group: "nodes",
+          classes: "relevance",
           data: {
-            source: sourceNode.id(),
-            target: targetNode.id(),
+            relevance: 1,
             conviction: 1,
-            consilience: 1,
           },
-          classes: "negation",
+          locked: true,
+          position: {
+            x: (sourcePosition.x + targetPosition.x) / 2,
+            y: (sourcePosition.y + targetPosition.y) / 2,
+          },
         });
+
+        cy.add([
+          {
+            group: "edges",
+            classes: "negation",
+            data: {
+              source: relevanceNode.id(),
+              target: sourceNode.id(),
+            },
+          },
+          {
+            group: "edges",
+            classes: "negation",
+            data: {
+              source: relevanceNode.id(),
+              target: targetNode.id(),
+            },
+          },
+        ]);
+
         addedEdge.remove();
       }
     );
@@ -170,22 +203,23 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
     const instance = cytoscape({
       container: cyContainer.current,
       style,
-      elements: elements.filter((e) => e.classes === "point"),
+      elements,
       layout: { name: "preset", fit: true, padding: 200 },
       ...cyProps,
     });
 
-    // @ts-expect-error Property does not exist
-    const edgeConnections = instance.edgeConnections();
-
-    elements
-      .filter((e) => e.classes === "negation")
-      .forEach(edgeConnections.addEdge);
-
     setCy?.(instance);
 
+    instance.on("position", "node.point", (e: EventObjectNode) => {
+      e.target
+        .neighborhood(".relevance")
+        .forEach((relevanceNode) =>
+          centerRelevanceBetweenEndpoints(relevanceNode, [])
+        );
+    });
+
     instance.on("add remove position data", () => {
-      setElements(instance.elements(".point,.negation").jsons());
+      setElements(instance.elements().jsons());
     });
 
     const setConviction = (
@@ -291,7 +325,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
 
     const edgeMenu = instance.cxtmenu({
       menuRadius: () => 120,
-      selector: ".aux-node",
+      selector: ".relevance",
       outsideMenuCancel: 1,
       commands: [
         {
@@ -409,10 +443,44 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
           className="border p-2"
           onChange={(e) => setAlgo(e.target.value as AlgorithmName)}
         >
-          <option value="naive">Naive</option>
+          {algorithmNames.map((name) => (
+            <option key={name} value={name}>
+              {name.charAt(0).toUpperCase() + name.slice(1)}
+            </option>
+          ))}
         </select>
         <p className="border p-2">Iterations: {algoIterations}</p>
       </div>
     </div>
   );
+};
+
+const centerRelevanceBetweenEndpoints = (
+  relevanceNode: NodeSingular,
+  alreadyCentered: string[]
+) => {
+  if (alreadyCentered.includes(relevanceNode.id())) return;
+
+  const negations = relevanceNode.edgesTo(
+    relevanceNode.neighborhood(".point,.relevance")
+  );
+
+  const negatedAPosition = negations[0].target().position();
+  const negatedBPosition = negations[1].target().position();
+
+  relevanceNode.unlock();
+  relevanceNode.position({
+    x: (negatedAPosition.x + negatedBPosition.x) / 2,
+    y: (negatedAPosition.y + negatedBPosition.y) / 2,
+  });
+  relevanceNode.lock();
+
+  relevanceNode
+    .neighborhood(".relevance")
+    .forEach((neighborRelevance) =>
+      centerRelevanceBetweenEndpoints(neighborRelevance, [
+        ...alreadyCentered,
+        relevanceNode.id(),
+      ])
+    );
 };

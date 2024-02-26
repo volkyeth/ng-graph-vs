@@ -1,4 +1,4 @@
-import { EdgeSingular, NodeSingular } from "cytoscape";
+import { NodeSingular } from "cytoscape";
 
 export const style: cytoscape.Stylesheet[] = [
   {
@@ -20,18 +20,15 @@ export const style: cytoscape.Stylesheet[] = [
     },
   },
   {
-    selector: "node.aux-node",
+    selector: "node.relevance",
     style: {
+      "border-color": "#aaa",
+      "border-width": 1,
+      shape: "diamond",
       "background-color": (node: NodeSingular) =>
-        getColor(
-          node.cy().getElementById(node.data("edgeId")).data("relevance")
-        ),
-      label: (node: NodeSingular) => {
-        const negation = node.cy().getElementById(node.data("edgeId"));
-        return `${negation.data("relevance") ?? "-"}/${negation.data(
-          "conviction"
-        )}`;
-      },
+        getColor(node.data("relevance")),
+      label: (node: NodeSingular) =>
+        `${node.data("relevance") ?? "-"}/${node.data("conviction")}`,
     },
   },
 
@@ -40,8 +37,6 @@ export const style: cytoscape.Stylesheet[] = [
     style: {
       width: 2,
       "target-arrow-shape": "triangle",
-      "source-arrow-shape": (e: EdgeSingular) =>
-        e.target().hasClass("aux-node") ? "none" : "triangle",
       "arrow-scale": 1,
       "curve-style": "straight",
     },
@@ -54,7 +49,7 @@ export const style: cytoscape.Stylesheet[] = [
   },
 ];
 
-const getColor = (consilience: number) =>
-  `hsl(${consilience > 0 ? 120 : 240}, 100%, ${
-    100 - Math.min(Math.abs(consilience), 50)
+const getColor = (intensity: number) =>
+  `hsl(${intensity > 0 ? 120 : 240}, 100%, ${
+    100 - Math.min(Math.abs(intensity), 50)
   }%)`;

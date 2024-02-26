@@ -1,4 +1,4 @@
-import { EdgeSingular, NodeSingular } from "cytoscape";
+import { NodeSingular } from "cytoscape";
 import { Algorithm } from "./Algorithm";
 /**
  * @description This is a naive algorithm that runs all attacks in parallel from the first iteration
@@ -12,34 +12,32 @@ export const naive: Algorithm = {
   name: "Naive",
   assignConsilience: (cytoscape, iterations) => {
     const points = cytoscape.nodes(".point");
-    const negations = cytoscape.edges(".negation");
+    const relevanceNodes = cytoscape.nodes(".relevance");
 
     points.forEach((point) => {
       point.data("consilience", point.data("conviction"));
     });
-    negations.forEach((negation) => {
-      negation.data("relevance", negation.data("conviction"));
+    relevanceNodes.forEach((relevanceNode) => {
+      relevanceNode.data("relevance", relevanceNode.data("conviction"));
     });
 
     for (let i = 0; i < iterations; i++) {
       points.forEach((point) => {
         point.scratch("roundConsilience", point.data("consilience"));
       });
-      negations.forEach((negation) => {
-        negation.scratch("roundRelevance", negation.data("relevance"));
+      relevanceNodes.forEach((relevanceNode) => {
+        relevanceNode.scratch(
+          "roundRelevance",
+          relevanceNode.data("relevance")
+        );
       });
 
-      points.forEach((point) => {
-        const targets = point.neighborhood("node");
+      relevanceNodes.forEach((relevanceNode) => {
+        const [A, B]: NodeSingular[2] = relevanceNode.outgoers("node");
+        const relevance = relevanceNode.scratch("roundRelevance");
 
-        targets.forEach((target) => {
-          const relevance = point
-            .edgesWith(target)[0]
-            .scratch("roundRelevance");
-          target.hasClass("point")
-            ? attackConsilience(point, target, relevance)
-            : attackRelevance(point, getNegationEdge(target), relevance);
-        });
+        attack(A, B, relevance);
+        attack(B, A, relevance);
       });
     }
 
@@ -47,9 +45,21 @@ export const naive: Algorithm = {
   },
 };
 
+const attack = (
+  source: NodeSingular,
+  target: NodeSingular,
+  relevance: number
+) => {
+  if (!source.hasClass("point")) return;
+
+  target.hasClass("point")
+    ? attackConsilience(source, target, relevance)
+    : attackRelevance(source, target, relevance);
+};
+
 const attackRelevance = (
   source: NodeSingular,
-  target: EdgeSingular,
+  target: NodeSingular,
   relevance: number
 ) => {
   const attackSign = source.scratch("roundConsilience") > 0 ? 1 : -1;
@@ -81,6 +91,3 @@ const attackConsilience = (
     target.data("consilience") - attackPower * attackSign
   );
 };
-
-const getNegationEdge = (auxNode: NodeSingular) =>
-  auxNode.cy().getElementById(auxNode.data("edgeId")) as EdgeSingular;
