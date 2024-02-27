@@ -1,4 +1,4 @@
-import { NodeSingular } from "cytoscape";
+import { EdgeSingular, NodeSingular } from "cytoscape";
 
 export const style: cytoscape.Stylesheet[] = [
   {
@@ -35,7 +35,11 @@ export const style: cytoscape.Stylesheet[] = [
   {
     selector: "edge.negation",
     style: {
-      width: 2,
+      "line-style": (edge) =>
+        edge.source().data("relevance") > 0 ? "solid" : "dashed",
+
+      width: (edge: EdgeSingular) =>
+        Math.min(Math.max(1, edge.source().data("relevance")), 6),
       "target-arrow-shape": "triangle",
       "arrow-scale": 1,
       "curve-style": "straight",
