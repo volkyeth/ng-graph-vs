@@ -19,6 +19,7 @@ import {
   DialogFooter,
   DialogOverlay,
 } from "../ui/Dialog";
+import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { Textarea } from "../ui/Textarea";
 import { Button } from "../ui/button";
@@ -42,6 +43,14 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   const [algo, setAlgo] = useState<AlgorithmName>("lifoRelevance");
   const [editingPoint, setEditingPoint] = useState<NodeSingular | null>(null);
   const [pointText, setPointText] = useState("");
+  const [pointConviction, setPointConviction] = useState(0);
+
+  useEffect(() => {
+    if (!editingPoint) return;
+
+    setPointText(editingPoint.data("text") ?? "");
+    setPointConviction(editingPoint.data("conviction") ?? 0);
+  }, [editingPoint]);
 
   useEffect(() => {
     if (!cy) return;
@@ -260,7 +269,6 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
                 fillColor: "#a2f",
                 content: "Edit",
                 select: (point: Singular) => {
-                  setPointText(point.data("text") ?? "");
                   setEditingPoint(point as unknown as NodeSingular);
                 },
               },
@@ -387,6 +395,39 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
               value={pointText}
               onChange={(e) => setPointText(e.target.value)}
               maxLength={320}
+              onKeyDown={(e) => {
+                if (!(e.metaKey || e.ctrlKey)) return;
+
+                if (e.key === "Enter") {
+                  e.preventDefault();
+
+                  if (!editingPoint) return;
+
+                  editingPoint.data("text", pointText);
+                  editingPoint.data("conviction", pointConviction);
+                  setEditingPoint(null);
+                }
+              }}
+            />
+            <Label htmlFor="conviction" className="text-right">
+              Conviction
+            </Label>
+            <Input
+              id="conviction"
+              type="number"
+              value={pointConviction}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+
+                  if (!editingPoint) return;
+
+                  editingPoint.data("text", pointText);
+                  editingPoint.data("conviction", pointConviction);
+                  setEditingPoint(null);
+                }
+              }}
+              onChange={(e) => setPointConviction(Number(e.target.value))}
             />
           </div>
           <DialogFooter>
@@ -407,6 +448,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
                 if (!editingPoint) return;
 
                 editingPoint.data("text", pointText);
+                editingPoint.data("conviction", pointConviction);
                 setEditingPoint(null);
               }}
             >
