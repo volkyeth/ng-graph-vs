@@ -8,11 +8,13 @@ export const style: cytoscape.Stylesheet[] = [
         getColor(node.data("credence")),
       "border-color": "#aaa",
       "border-width": 1,
-      shape: "ellipse",
-      width: "100px",
-      height: "100px",
+      shape: "round-rectangle",
+      width: "400px",
+      height: "160px",
       label: (point: NodeSingular) =>
-        `${point.data("credence") ?? "-"}/${point.data("conviction")}`,
+        `[${point.data("credence") ?? "-"}/${point.data(
+          "conviction"
+        )}] ${breakLongWords(point.data("text") ?? "").replace(/\n/g, " ")}`,
       "text-wrap": "wrap",
       "text-justification": "left",
       "text-max-width": "360px",
@@ -57,3 +59,8 @@ const getColor = (intensity: number) =>
   `hsl(${intensity > 0 ? 120 : 200}, 100%, ${
     100 - Math.min(Math.abs(intensity), 50)
   }%)`;
+
+const breakLongWords = (text: string) =>
+  text.replace(/[^\s]{46,}/g, (word) =>
+    (word.match(/.{1,46}/g) ?? []).join("\n")
+  );

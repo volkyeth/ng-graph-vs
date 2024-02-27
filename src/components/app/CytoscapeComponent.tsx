@@ -12,6 +12,16 @@ import cxtmenu from "cytoscape-cxtmenu";
 import edgehandles from "cytoscape-edgehandles";
 import { useAtom } from "jotai";
 import React, { useEffect, useRef, useState } from "react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogOverlay,
+} from "../ui/Dialog";
+import { Label } from "../ui/Label";
+import { Textarea } from "../ui/Textarea";
+import { Button } from "../ui/button";
 
 cytoscape.use(edgehandles);
 cytoscape.use(cxtmenu);
@@ -30,6 +40,8 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   const [elements, setElements] = useAtom(graphStateAtom);
   const [algoIterations, setAlgoIterations] = useState(0);
   const [algo, setAlgo] = useState<AlgorithmName>("lifoRelevance");
+  const [editingPoint, setEditingPoint] = useState<NodeSingular | null>(null);
+  const [pointText, setPointText] = useState("");
 
   useEffect(() => {
     if (!cy) return;
@@ -241,7 +253,19 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       menuRadius: () => 120,
       selector: ".point,.relevance",
       outsideMenuCancel: 1,
-      commands: [
+      commands: (element) => [
+        ...(element.hasClass("point")
+          ? [
+              {
+                fillColor: "#a2f",
+                content: "Edit",
+                select: (point: Singular) => {
+                  setPointText(point.data("text") ?? "");
+                  setEditingPoint(point as unknown as NodeSingular);
+                },
+              },
+            ]
+          : []),
         {
           fillColor: "#9f9",
           content: "+ 1",
@@ -347,6 +371,50 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
         </select>
         <p className="border p-2">Iterations: {algoIterations}</p>
       </div>
+      <Dialog
+        open={editingPoint !== null}
+        onOpenChange={() => setEditingPoint(null)}
+      >
+        <DialogOverlay />
+        <DialogContent className="flex flex-col gap-10 sm:max-w-[425px] bg-white">
+          <div className="flex flex-col items-start gap-4">
+            <Label htmlFor="negation" className="text-right">
+              Point {pointText.length}/320
+            </Label>
+            <Textarea
+              autoFocus
+              id="point-text"
+              value={pointText}
+              onChange={(e) => setPointText(e.target.value)}
+              maxLength={320}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                onClick={() => {
+                  setEditingPoint(null);
+                }}
+                type="button"
+                variant="secondary"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              type="button"
+              onClick={() => {
+                if (!editingPoint) return;
+
+                editingPoint.data("text", pointText);
+                setEditingPoint(null);
+              }}
+            >
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
