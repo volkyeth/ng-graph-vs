@@ -209,6 +209,11 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       });
     });
 
+    cy.on("cxttap", ".point", (event: EventObjectNode) => {
+      setEditingPoint(event.target as NodeSingular);
+      return;
+    });
+
     cy.on("tap", (event) => {
       if (event.target !== cy) return;
 
