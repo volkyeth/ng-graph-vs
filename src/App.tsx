@@ -1,18 +1,15 @@
-import { useAtom } from "jotai";
-import { useEffect } from "react";
+import { useAtomValue } from "jotai";
 import { CytoscapeComponent } from "./components/app/CytoscapeComponent";
+import { Home } from "./components/app/Home";
 import { graphIdAtom } from "./graph/state";
 import { style } from "./graph/style";
 
 function App() {
-  const [graphId, setGraphId] = useAtom(graphIdAtom);
-  useEffect(() => {
-    if (!graphId) setGraphId(Math.random().toString(36).substring(7));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const graphId = useAtomValue(graphIdAtom);
+
   return (
     <div className="w-screen h-screen">
-      <CytoscapeComponent style={style} />
+      {graphId ? <CytoscapeComponent style={style} /> : <Home />}
     </div>
   );
 }

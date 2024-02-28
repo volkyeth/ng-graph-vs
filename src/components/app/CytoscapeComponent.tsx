@@ -1,4 +1,4 @@
-import { graphStateAtom } from "@/graph/state";
+import { graphIdAtom, graphStateAtom } from "@/graph/state";
 import { cyInstanceAtom } from "@/hooks/useCyInstance";
 import { AlgorithmName, algorithmNames, algorithms } from "@/lib/algorithms";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,8 @@ import cytoscape, {
 } from "cytoscape";
 import cxtmenu from "cytoscape-cxtmenu";
 import edgehandles from "cytoscape-edgehandles";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
+import { ArrowLeft } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Dialog,
@@ -44,6 +45,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   const [editingPoint, setEditingPoint] = useState<NodeSingular | null>(null);
   const [pointText, setPointText] = useState("");
   const [pointConviction, setPointConviction] = useState(0);
+  const setGraphId = useSetAtom(graphIdAtom);
 
   useEffect(() => {
     if (!editingPoint) return;
@@ -370,6 +372,15 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   return (
     <div className={cn("w-full h-full relative border-2 border-transparent")}>
       <div ref={cyContainer} className="w-full h-full" />
+      <Button
+        variant={"outline"}
+        className="absolute top-2 left-2 rounded-none gap-2 p-2"
+        onClick={() => {
+          setGraphId("");
+        }}
+      >
+        <ArrowLeft /> Back
+      </Button>
       <div className="flex absolute gap-2 top-2 right-2">
         <select
           value={algo}
@@ -382,7 +393,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
             </option>
           ))}
         </select>
-        <p className="border p-2">Iterations: {algoIterations}</p>
+        <p className="border p-2">Iterations: {algoIterations}</p>B
       </div>
       <Dialog
         open={editingPoint !== null}
