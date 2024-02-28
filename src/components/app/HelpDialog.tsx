@@ -38,6 +38,14 @@ export const HelpDialog = () => {
             Right-click/Two-finger drag from a Point to a Point/Relevance node
           </p>
           <p className="text-slate-600">Create a negation with the point</p>
+          <p className="font-semibold justify-self-end text-right">
+            Drag on board
+          </p>
+          <p className="text-slate-600">Move the viewport</p>
+          <p className="font-semibold justify-self-end text-right">
+            Pinch/scroll
+          </p>
+          <p className="text-slate-600">Zoom</p>
           <ArrowBigLeft className="justify-self-end p-2 h-10 w-10 rounded-sm border-2" />
           <p className="text-slate-600">Reduce amount of algo iterations</p>
           <ArrowBigRight className="justify-self-end p-2 h-10 w-10 rounded-sm border-2" />
