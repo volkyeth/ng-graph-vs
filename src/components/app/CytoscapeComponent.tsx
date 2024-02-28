@@ -1,4 +1,4 @@
-import { graphIdAtom, graphStateAtom } from "@/graph/state";
+import { graphIdAtom, graphStateAtom, helpDialogOpenAtom } from "@/graph/state";
 import { cyInstanceAtom } from "@/hooks/useCyInstance";
 import { AlgorithmName, algorithmNames, algorithms } from "@/lib/algorithms";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,7 @@ import cytoscape, {
 import cxtmenu from "cytoscape-cxtmenu";
 import edgehandles from "cytoscape-edgehandles";
 import { useAtom, useSetAtom } from "jotai";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, HelpCircle } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Dialog,
@@ -24,6 +24,7 @@ import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { Textarea } from "../ui/Textarea";
 import { Button } from "../ui/button";
+import { HelpDialog } from "./HelpDialog";
 
 cytoscape.use(edgehandles);
 cytoscape.use(cxtmenu);
@@ -46,6 +47,7 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
   const [pointText, setPointText] = useState("");
   const [pointConviction, setPointConviction] = useState(0);
   const setGraphId = useSetAtom(graphIdAtom);
+  const setHelpDialogOpen = useSetAtom(helpDialogOpenAtom);
 
   useEffect(() => {
     if (!editingPoint) return;
@@ -381,6 +383,16 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
       >
         <ArrowLeft /> Back
       </Button>
+      <Button
+        variant={"outline"}
+        size={"icon"}
+        className="absolute bottom-2 right-2 rounded-none gap-2 p-2"
+        onClick={() => {
+          setHelpDialogOpen(true);
+        }}
+      >
+        <HelpCircle />
+      </Button>
       <div className="flex absolute gap-2 top-2 right-2">
         <select
           value={algo}
@@ -393,8 +405,9 @@ export const CytoscapeComponent: React.FC<CytoscapeComponentProps> = ({
             </option>
           ))}
         </select>
-        <p className="border p-2">Iterations: {algoIterations}</p>B
+        <p className="border p-2">Iterations: {algoIterations}</p>
       </div>
+      <HelpDialog />
       <Dialog
         open={editingPoint !== null}
         onOpenChange={() => setEditingPoint(null)}

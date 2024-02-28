@@ -1,7 +1,7 @@
 import { graphIdAtom } from "@/graph/state";
 import { useSetAtom } from "jotai";
 import { Trash } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { Button } from "../ui/button";
@@ -14,7 +14,8 @@ export const Home = () => {
   const refreshSessionIds = useCallback(() => {
     const ids: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
-      localStorage.key(i) && ids.push(localStorage.key(i)!);
+      const key = localStorage.key(i);
+      key && key !== "helpDialogOpen" && ids.push(localStorage.key(i)!);
     }
     setSessionIds(ids);
   }, []);
@@ -44,9 +45,8 @@ export const Home = () => {
         <h2 className="font-bold text-2xl mb-6">Saved sessions:</h2>
         <div className="grid grid-cols-2 gap-1 ">
           {sessionIds.map((sessionId) => (
-            <>
+            <Fragment key={sessionId}>
               <Button
-                key={`${sessionId}-link`}
                 variant={"outline"}
                 onClick={() => {
                   setGraphId(sessionId!);
@@ -55,8 +55,7 @@ export const Home = () => {
                 {sessionId}
               </Button>
               <Button
-                key={`${sessionId}-delete`}
-                variant={"secondary"}
+                variant={"ghost"}
                 size={"icon"}
                 onClick={() => {
                   localStorage.removeItem(sessionId!);
@@ -65,7 +64,7 @@ export const Home = () => {
               >
                 <Trash />
               </Button>
-            </>
+            </Fragment>
           ))}
         </div>
       </div>
